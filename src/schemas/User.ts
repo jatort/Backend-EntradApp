@@ -1,11 +1,18 @@
 import mongoose from "mongoose";
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 import bcrypt from "bcryptjs";
 const { isEmail } = require("validator");
 
 const SALT_WORK_FACTOR = 10;
 
-const UserSchema = new Schema({
+interface IUser {
+  username: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
+const UserSchema = new Schema<IUser>({
   username: {
     type: String,
     required: true,
@@ -41,4 +48,5 @@ UserSchema.methods.validatePassword = async function validatePassword(
   return await bcrypt.compare(data, this.password);
 };
 
-export const User = mongoose.model("User", UserSchema); // User is the name of the collection
+// Create model
+export const User = model<IUser>("User", UserSchema); // User is the name of the collection
