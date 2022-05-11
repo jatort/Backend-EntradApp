@@ -10,6 +10,7 @@ interface IUser {
   email: string;
   password: string;
   role: string;
+  validatePassword: (data: string) => Promise<boolean>;
 }
 
 const UserSchema = new Schema<IUser>({
