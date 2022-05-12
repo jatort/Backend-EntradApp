@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { User } from "../schemas/User";
+import { IUser, User } from "../schemas/User";
 const db = require("./setup/db");
 
 const userData = {
@@ -31,15 +31,19 @@ describe("User model", () => {
     // Object Id should be defined when successfully saved to MongoDB.
     expect(savedUser._id).toBeDefined();
     expect(savedUser.email).toBe(userData.email);
-    expect(await savedUser.validatePassword(validUser.password)).toBe(true);
+    expect(await savedUser.validatePassword(userData.password)).toBe(true);
     expect(savedUser.role).toBe(userData.role);
   });
 
-  /* it("create user with invalid email", async () => {
+  it("create user with invalid email", async () => {
     const invalidUser = new User({ ...userData, email: "invalidEmail" });
-    const validationResult: any = await invalidUser.save();
-    expect(validationResult.errors.email.message).toBe("invalid email");
-  }); */
+    // const validationResult: any = await invalidUser.validateSync();
+    try {
+      const invalidSave = await invalidUser.save();
+    } catch (err: any) {
+      expect(err.errors.email.message).toBe("invalid email");
+    }
+  });
 
   // It should us tell us the errors in on email field.
   it("create user without required field should failed", async () => {
