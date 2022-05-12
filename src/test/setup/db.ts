@@ -5,7 +5,7 @@ let mongo: any = undefined;
 
 module.exports.setUp = async () => {
   mongo = await MongoMemoryServer.create();
-  const url = mongo.getUri();
+  const url = await mongo.getUri();
 
   await mongoose.connect(url, {
     useNewUrlParser: true,
@@ -14,9 +14,9 @@ module.exports.setUp = async () => {
 
 module.exports.dropDatabase = async () => {
   if (mongo) {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
-    await mongo.stop();
+    await mongoose.connection.db.dropDatabase();
+    await mongoose.disconnect();
+    // await mongo.stop();
   }
 };
 

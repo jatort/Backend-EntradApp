@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 import { createUser } from "./controllers/userController";
 
 dotenv.config();
-const app = express();
+export const app = express();
 
 app.use(express.json()); // for parsing application/json
 
@@ -20,9 +20,9 @@ app.get("/", (req: Request, res: Response) => {
 app.post("/user", async (req: Request, res: Response) => {
   try {
     const user = await createUser(req.body);
-    return res.status(200).json({ user });
+    return res.status(201).json({ user });
   } catch (err: any) {
-    return res.status(400).json(err.message);
+    return res.status(400).json({ message: err.message });
   }
 });
 
