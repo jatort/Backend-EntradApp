@@ -58,4 +58,15 @@ describe("User model", () => {
     expect(err).toBeInstanceOf(mongoose.Error.ValidationError);
     expect(err.errors.email).toBeDefined();
   });
+
+  it("create two users with the unique attribute should failed (using username)", async () => {
+    const user1 = new User(userData);
+    const user2 = new User(userData);
+    await user1.save();
+    try {
+      await user2.save();
+    } catch (err: any) {
+      expect(err.code).toBe(11000);
+    }
+  });
 });
