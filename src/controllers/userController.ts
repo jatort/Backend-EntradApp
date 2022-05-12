@@ -2,6 +2,10 @@ import { User } from "../schemas/User";
 import mongoose from "mongoose";
 
 export async function createUser(data: Object) {
+  /*
+  Crea un usuario a partir de los parámetros recibidos en el json data. Se filtran los errores posibles diferenciando 
+  sus mensajes de error y en caso de exito se retorna el modelo usuario.
+  */
   const user = new User(data);
   try {
     await user.save();

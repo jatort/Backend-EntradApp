@@ -16,8 +16,14 @@ app.get("/", (req: Request, res: Response) => {
     status: "Hola!",
   });
 });
-
+/*
+  USUARIOS
+*/
 app.post("/user", async (req: Request, res: Response) => {
+  /*
+  Endpoint para crear usuarios, en caso de exito retorna los datos del nuevo modelo usuario, en caso contrario se retorna el código 400
+  con el mensaje específico de la causa del error.
+  */
   try {
     const user = await createUser(req.body);
     return res.status(201).json({ user });
@@ -25,6 +31,9 @@ app.post("/user", async (req: Request, res: Response) => {
     return res.status(400).json({ message: err.message });
   }
 });
+/*
+  FIN USUARIOS
+*/
 
 async function run() {
   // Connect to MongoDB
