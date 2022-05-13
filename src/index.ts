@@ -1,19 +1,17 @@
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
-import { User } from "./schemas/User";
+import routes from "./routes/index"
 
 dotenv.config();
-const app = express();
+export const app = express();
+
+app.use(express.json()); // for parsing application/json
 
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO_URL;
 
-app.get("/", (req: Request, res: Response) => {
-  return res.json({
-    status: "Hola!",
-  });
-});
+app.use("/api/v1/", routes)
 
 async function run() {
   // Connect to MongoDB
