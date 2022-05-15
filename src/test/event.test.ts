@@ -35,6 +35,24 @@ const eventData = {
   user: testUser._id,
 };
 
+const eventWithoutDescription = {
+  name: "Lollapalooza",
+  category: "Music",
+  date: new Date('2022-06-15'),
+  dateLimitBuy: new Date('2022-06-09'),
+  nTickets: 1000,
+  user: testUser._id,
+};
+
+const eventInvalid = {
+  name: "Lollapalooza",
+  category: "Music",
+  date: new Date('2022-06-03'),
+  dateLimitBuy: new Date('2022-06-09'),
+  nTickets: 1000,
+  user: testUser._id,
+};
+
 describe("Event model", () => {
   it("create & save event successfully", async () => {
     const validEvent = new Event(eventData);
@@ -49,6 +67,29 @@ describe("Event model", () => {
     expect(savedEvent.nTickets).toBe(validEvent.nTickets);
     expect(savedEvent.image_url).toBe(validEvent.image_url);
     expect(savedEvent.user).toBe(validEvent.user);
+  });
+
+  it("create & save event without description & image successfully", async () => {
+    const validEvent = new Event(eventWithoutDescription);
+    const savedEvent = await validEvent.save();
+    expect(savedEvent._id).toBeDefined();
+    expect(savedEvent.name).toBe(validEvent.name);
+    expect(savedEvent.category).toBe(validEvent.category);
+    expect(savedEvent.date).toBe(validEvent.date);
+    expect(savedEvent.dateLimitBuy).toBe(validEvent.dateLimitBuy);
+    expect(savedEvent.nTickets).toBe(validEvent.nTickets);
+    expect(savedEvent.user).toBe(validEvent.user);
+    expect(savedEvent.description).toBeUndefined()
+    expect(savedEvent.image_url).toBeUndefined()
+  });
+
+  it("create event with 'date' less than 'dateLimitBuy'", async () => {
+    const invalidEvent = new Event(eventInvalid);
+    try{
+      const savedEvent = await invalidEvent.save();
+    } catch (err: any) {
+      expect(err.message).toBe("'date' must be more than 'dateLimitBuy'");
+    }
   });
 });
 

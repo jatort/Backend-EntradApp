@@ -22,4 +22,10 @@ const EventSchema = new Schema<IEvent>({
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
+EventSchema.pre("save", async function save(next) {
+  if (this.dateLimitBuy <= this.date) return next();
+  const err = new Error("'date' must be more than 'dateLimitBuy'");
+  return next(err);
+});
+
 export const Event = model<IEvent>("Event", EventSchema);
