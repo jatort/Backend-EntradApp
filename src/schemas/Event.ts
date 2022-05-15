@@ -7,7 +7,7 @@ export interface IEvent{
   dateLimitBuy: Date;
   description: string;
   nTickets: number;
-  image_url: string;
+  imageUrl: string;
   user: Types.ObjectId;
 }
 
@@ -18,7 +18,7 @@ const EventSchema = new Schema<IEvent>({
   dateLimitBuy: { type: Date, required: true },
   description: { type: String, required: false },
   nTickets: { type: Number, required: true },
-  image_url: { type: String, required: false },
+  imageUrl: { type: String, required: false },
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
