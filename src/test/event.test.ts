@@ -15,6 +15,7 @@ afterAll(async () => {
   await db.dropDatabase();
 });
 
+// Usuario generico para crear el evento
 const userData = {
   username: "TekLoon",
   email: "tekloon@gmail.com",
@@ -24,6 +25,7 @@ const userData = {
 
 const testUser = new User(userData);
 
+// Evento generico para testear el modelo
 const eventData = {
   name: "Lollapalooza",
   category: "Music",

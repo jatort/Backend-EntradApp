@@ -4,6 +4,7 @@ import { User } from "../schemas/User";
 import { Event } from "../schemas/Event";
 import mongoose from "mongoose";
 
+// Usuario generico de prueba para crear un evento
 const userData = {
   username: "TekLoon",
   email: "tekloon@gmail.com",
@@ -13,6 +14,7 @@ const userData = {
 
 const testUser = new User(userData);
 
+// Evento generico para testear los endpoints
 const eventData = {
   name: "Lollapalooza",
   category: "Music",
