@@ -20,6 +20,8 @@ async function run() {
 
 run()
   .then((result) =>
-    app.listen(PORT, () => console.log(`app running on port ${PORT}`))
+    {
+      if(process.env.ENV !== "test") app.listen(PORT, () => console.log(`app running on port ${PORT}`));
+    }
   )
   .catch((err) => console.log(err));
