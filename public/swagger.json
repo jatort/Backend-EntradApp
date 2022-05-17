@@ -1,0 +1,162 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"Types.ObjectId": {
+				"type": "string"
+			},
+			"IEvent": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string"
+					},
+					"date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"dateLimitBuy": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"description": {
+						"type": "string"
+					},
+					"nTickets": {
+						"type": "number",
+						"format": "double"
+					},
+					"imageUrl": {
+						"type": "string"
+					},
+					"userId": {
+						"$ref": "#/components/schemas/Types.ObjectId"
+					}
+				},
+				"required": [
+					"name",
+					"category",
+					"date",
+					"dateLimitBuy",
+					"description",
+					"nTickets",
+					"imageUrl",
+					"userId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserCreateRequest": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"role": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"email",
+					"password",
+					"role"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "entradapp",
+		"version": "1.0.0",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/api/v1/event": {
+			"post": {
+				"operationId": "CreateEvent",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IEvent"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"event"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IEvent"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/user": {
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UserCreateRequest"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"user"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

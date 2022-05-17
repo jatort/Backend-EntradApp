@@ -12,6 +12,13 @@ export interface IUser {
   role: string;
   validatePassword: (data: string) => Promise<boolean>;
 }
+// Clase para manejar la creación de usuarios con tsoa
+export interface UserCreateRequest {
+  username: string;
+  email: string;
+  password: string;
+  role: string;
+}
 
 const UserSchema = new Schema<IUser>({
   username: {
