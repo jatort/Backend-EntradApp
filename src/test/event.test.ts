@@ -7,10 +7,6 @@ beforeAll(async () => {
   await db.setUp();
 });
 
-afterEach(async () => {
-  await db.dropCollections();
-});
-
 afterAll(async () => {
   await db.dropDatabase();
 });
@@ -56,6 +52,10 @@ const eventInvalid = {
 };
 
 describe("Event model", () => {
+  afterEach(async () => {
+    await db.dropCollections();
+  });
+  
   it("create & save event successfully", async () => {
     const validEvent = new Event(eventData);
     const savedEvent = await validEvent.save();

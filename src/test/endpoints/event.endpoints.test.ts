@@ -40,6 +40,7 @@ afterAll(async () => {
 
 describe("Event endpoints", () => {
   it("Testing event post endpoint", async () => {
+    jest.setTimeout(10000);
     const res = await request(app).post("/api/v1/event").send(eventData);
     expect(res.statusCode).toEqual(201);
   });

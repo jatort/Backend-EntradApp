@@ -13,10 +13,6 @@ beforeAll(async () => {
   await db.setUp();
 });
 
-afterEach(async () => {
-  await db.dropCollections();
-});
-
 afterAll(async () => {
   await db.dropDatabase();
 });
@@ -25,6 +21,10 @@ afterAll(async () => {
  * User model
  */
 describe("User model", () => {
+  afterEach(async () => {
+    await db.dropCollections();
+  });  
+
   it("create & save user successfully", async () => {
     const validUser = new User(userData);
     const savedUser = await validUser.save();
