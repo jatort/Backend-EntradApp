@@ -1,7 +1,7 @@
 import request from "supertest";
-import { app } from "../index";
-import { User } from "../schemas/User";
-import { Event } from "../schemas/Event";
+import { app } from "../../index";
+import { User } from "../../schemas/User";
+import { Event } from "../../schemas/Event";
 import mongoose from "mongoose";
 
 // Usuario generico de prueba para crear un evento
