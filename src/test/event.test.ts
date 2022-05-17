@@ -15,7 +15,6 @@ afterAll(async () => {
   await db.dropDatabase();
 });
 
-// Usuario generico para crear el evento
 const userData = {
   username: "TekLoon",
   email: "tekloon@gmail.com",
@@ -25,34 +24,35 @@ const userData = {
 
 const testUser = new User(userData);
 
-// Evento generico para testear el modelo
 const eventData = {
   name: "Lollapalooza",
   category: "Music",
-  date: new Date('2022-06-15'),
-  dateLimitBuy: new Date('2022-06-09'),
-  description: "Lollapalooza​ es un festival musical de los Estados Unidos que originalmente ofrecía bandas de rock alternativo, indie y punk rock; también hay actuaciones cómicas y de danza.",
+  date: new Date("2022-06-15"),
+  dateLimitBuy: new Date("2022-06-09"),
+  description:
+    "Lollapalooza​ es un festival musical de los Estados Unidos que originalmente ofrecía bandas de rock alternativo, indie y punk rock; también hay actuaciones cómicas y de danza.",
   nTickets: 1000,
-  imageUrl: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
-  user: testUser._id,
+  imageUrl:
+    "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
+  userId: testUser._id,
 };
 
 const eventWithoutDescription = {
   name: "Lollapalooza",
   category: "Music",
-  date: new Date('2022-06-15'),
-  dateLimitBuy: new Date('2022-06-09'),
+  date: new Date("2022-06-15"),
+  dateLimitBuy: new Date("2022-06-09"),
   nTickets: 1000,
-  user: testUser._id,
+  userId: testUser._id,
 };
 
 const eventInvalid = {
   name: "Lollapalooza",
   category: "Music",
-  date: new Date('2022-06-03'),
-  dateLimitBuy: new Date('2022-06-09'),
+  date: new Date("2022-06-03"),
+  dateLimitBuy: new Date("2022-06-09"),
   nTickets: 1000,
-  user: testUser._id,
+  userId: testUser._id,
 };
 
 describe("Event model", () => {
@@ -68,7 +68,7 @@ describe("Event model", () => {
     expect(savedEvent.description).toBe(validEvent.description);
     expect(savedEvent.nTickets).toBe(validEvent.nTickets);
     expect(savedEvent.imageUrl).toBe(validEvent.imageUrl);
-    expect(savedEvent.user).toBe(validEvent.user);
+    expect(savedEvent.userId).toBe(validEvent.userId);
   });
 
   it("create & save event without description & image successfully", async () => {
@@ -80,18 +80,17 @@ describe("Event model", () => {
     expect(savedEvent.date).toBe(validEvent.date);
     expect(savedEvent.dateLimitBuy).toBe(validEvent.dateLimitBuy);
     expect(savedEvent.nTickets).toBe(validEvent.nTickets);
-    expect(savedEvent.user).toBe(validEvent.user);
-    expect(savedEvent.description).toBeUndefined()
-    expect(savedEvent.imageUrl).toBeUndefined()
+    expect(savedEvent.userId).toBe(validEvent.userId);
+    expect(savedEvent.description).toBeUndefined();
+    expect(savedEvent.imageUrl).toBeUndefined();
   });
 
   it("create event with 'date' less than 'dateLimitBuy'", async () => {
     const invalidEvent = new Event(eventInvalid);
-    try{
+    try {
       const savedEvent = await invalidEvent.save();
     } catch (err: any) {
       expect(err.message).toBe("'date' must be more than 'dateLimitBuy'");
     }
   });
 });
-

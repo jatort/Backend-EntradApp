@@ -1,6 +1,6 @@
 import { Date, Schema, Types, model } from "mongoose";
 
-export interface IEvent{
+export interface IEvent {
   name: string;
   category: string;
   date: Date;
@@ -8,18 +8,18 @@ export interface IEvent{
   description: string;
   nTickets: number;
   imageUrl: string;
-  user: Types.ObjectId;
+  userId: Types.ObjectId;
 }
 
 const EventSchema = new Schema<IEvent>({
   name: { type: String, required: true },
-  category: { type: String, required: true},
+  category: { type: String, required: true },
   date: { type: Date, required: true },
   dateLimitBuy: { type: Date, required: true },
   description: { type: String, required: false },
   nTickets: { type: Number, required: true },
   imageUrl: { type: String, required: false },
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 EventSchema.pre("save", async function save(next) {
