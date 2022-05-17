@@ -106,6 +106,6 @@ dist
 
 /build
 
-#package-lock.json
 
 swagger.json
+public/swagger.json
