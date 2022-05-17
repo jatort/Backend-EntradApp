@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Application } from "express";
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import morgan from "morgan";
@@ -6,7 +6,7 @@ import routes from "./routes/index";
 import swaggerUi from "swagger-ui-express";
 
 dotenv.config();
-const app = express();
+const app: Application = express();
 
 app.use(express.json()); // for parsing application/json
 app.use(morgan("tiny")); // routes log
@@ -33,7 +33,8 @@ async function run() {
 }
 
 run()
-  .then((result) =>
-    app.listen(PORT, () => console.log(`app running on port ${PORT}`))
-  )
+  .then((result) => {
+    if (process.env.NODE_ENV !== "test")
+      app.listen(PORT, () => console.log(`app running on port ${PORT}`));
+  })
   .catch((err) => console.log(err));

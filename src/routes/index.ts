@@ -1,8 +1,10 @@
 import Router from "express";
 const userRoutes = require("./user");
-import swaggerUi from "swagger-ui-express";
+const eventRoutes = require("./event");
+
 const routes = Router();
 
 routes.use("/user", userRoutes);
+routes.use("/event", eventRoutes);
 
 export default routes;
