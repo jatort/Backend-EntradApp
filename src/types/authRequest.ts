@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request } from "express";
 
 interface UserData {
   id: string;
@@ -6,7 +6,11 @@ interface UserData {
   role: string;
 }
 
-export interface AuthRequest extends Request {
-  user?: UserData,
+export interface LoginBody {
+  email: string;
+  password: string;
 }
 
+export interface AuthRequest extends Request {
+  user?: UserData;
+}
