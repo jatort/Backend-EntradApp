@@ -1,12 +1,14 @@
-import express, { Application } from "express";
+import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import * as dotenv from "dotenv";
+
 import morgan from "morgan";
 import routes from "./routes/index";
 import swaggerUi from "swagger-ui-express";
 
+
 dotenv.config();
-export const app: Application = express();
+export const app = express();
 
 app.use(express.json()); // for parsing application/json
 app.use(morgan("tiny")); // routes log
@@ -26,6 +28,7 @@ app.use(
 );
 
 app.use("/api/v1/", routes);
+
 
 async function run() {
   // Connect to MongoDB
