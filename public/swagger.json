@@ -6,6 +6,52 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"Types.ObjectId": {
+				"type": "string"
+			},
+			"IEvent": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string"
+					},
+					"date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"dateLimitBuy": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"description": {
+						"type": "string"
+					},
+					"nTickets": {
+						"type": "number",
+						"format": "double"
+					},
+					"imageUrl": {
+						"type": "string"
+					},
+					"userId": {
+						"$ref": "#/components/schemas/Types.ObjectId"
+					}
+				},
+				"required": [
+					"name",
+					"category",
+					"date",
+					"dateLimitBuy",
+					"description",
+					"nTickets",
+					"imageUrl",
+					"userId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"UserCreateRequest": {
 				"properties": {
 					"username": {
@@ -43,7 +89,39 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
-		"/undefined": {
+		"/api/v1/event": {
+			"post": {
+				"operationId": "CreateEvent",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IEvent"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"event"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IEvent"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/user": {
 			"post": {
 				"operationId": "CreateUser",
 				"responses": {

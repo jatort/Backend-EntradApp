@@ -6,7 +6,7 @@ import routes from "./routes/index";
 import swaggerUi from "swagger-ui-express";
 
 dotenv.config();
-const app: Application = express();
+export const app: Application = express();
 
 app.use(express.json()); // for parsing application/json
 app.use(morgan("tiny")); // routes log
