@@ -15,7 +15,7 @@ loginRouter.post('/', async (req: Request, res: Response) => {
   if (!user) return res.status(400).json({error: "User not found"});
 
   // Validacion de la contrasena
-  const passwordIsCorrect = await bcrypt.compare(password, user.password);
+  const passwordIsCorrect = await user.validatePassword(password);
   if (!passwordIsCorrect) return res.status(400).json({error: "Password is invalid"});
   
   // Generacion del JSON Web Token
