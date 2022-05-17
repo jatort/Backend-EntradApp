@@ -1,6 +1,8 @@
 {
-  "entryFile": "src/routes/index.ts",
+  "basePath": "/api/v1",
+  "entryFile": "src/index.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/controllers/*.ts"],
   "spec": {
     "outputDirectory": "public",
     "specVersion": 3

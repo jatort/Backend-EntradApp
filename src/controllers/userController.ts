@@ -1,12 +1,13 @@
-import { User, IUser } from "../schemas/User";
+import { User, UserCreateRequest } from "../schemas/User";
 import mongoose from "mongoose";
 import { Get, Post, Tags, Body, Path, Route } from "tsoa";
-
-@Route("user")
+@Route("api/v1/user")
 @Tags("user")
 export default class UserController {
   @Post("/")
-  public async createUser(@Body() body: IUser): Promise<IUser> {
+  public async createUser(
+    @Body() body: UserCreateRequest
+  ): Promise<UserCreateRequest> {
     /*
     Crea un usuario a partir de los parámetros recibidos en el json data. Se filtran los errores posibles diferenciando 
     sus mensajes de error y en caso de exito se retorna el modelo usuario.
