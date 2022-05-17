@@ -1,9 +1,11 @@
 import request from "supertest";
-import { app } from "../../index";
+import { app, dropCollections ,stopDb } from "../../index";
 import { User } from "../../schemas/User";
-import mongoose from "mongoose";
-
+//import mongoose from "mongoose";
 // Usuario generico de prueba para crear un evento
+//
+//const db = require("../setup/db");
+
 const userData = {
   username: "TekLoon",
   email: "tekloon@gmail.com",
@@ -16,8 +18,11 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await mongoose.connection.db.dropDatabase();
-  await mongoose.disconnect();
+  await stopDb();
+});
+
+afterEach(async () => {
+  await dropCollections();
 });
 
 describe("User endpoints", () => {
