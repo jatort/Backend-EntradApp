@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { IUser, User } from "../schemas/User";
-const db = require("./setup/db");
+import { IUser, User } from "../../schemas/User";
+const db = require("../setup/db");
 
 const userData = {
   username: "TekLoon",

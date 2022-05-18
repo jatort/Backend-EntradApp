@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { IEvent, Event } from "../schemas/Event";
-import { IUser, User } from "../schemas/User";
-const db = require("./setup/db");
+import { IEvent, Event } from "../../schemas/Event";
+import { IUser, User } from "../../schemas/User";
+const db = require("../setup/db");
 
 beforeAll(async () => {
   await db.setUp();

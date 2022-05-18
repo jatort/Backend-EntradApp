@@ -33,40 +33,19 @@ async function run() {
   // Connect to MongoDB
   mongo = await MongoMemoryServer.create();
   const url = await mongo.getUri();
+
+  // Connect to test DB if running tests
   const MONGO_URL = process.env.NODE_ENV == "test" ? url : process.env.MONGO_URL;
   await mongoose.connect(`${MONGO_URL}`);
 }
-export const dropCollections = async () => {
-    if (mongo) {
-      const collections = mongoose.connection.collections;
-
-      for (const key in collections) {
-	const collection = collections[key];
-	await collection.deleteMany({});
-      }
-    }
-}
 
 export const stopDb = async () => {
-  if (mongo) {
-    console.log("Hay mongo");
-    await mongoose.connection.db.dropDatabase();
-    await mongoose.connection.close();
-    await mongoose.disconnect();
-    await mongo.stop();
-    console.log("FINAL");//process.exit(0);
-  }
-  else { console.log("No hay mongo"); }
+  if (mongo) await mongo.stop();
 }
 
 run()
   .then((result) => {
-    if(process.env.NODE_ENV !== "test") {
-      app.listen(PORT, () => console.log(`app running on port ${PORT}`));
-      console.log("NO testing");
-    } else {
-      console.log("TESTING!");
-    }
+    if(process.env.NODE_ENV !== "test") app.listen(PORT, () => console.log(`app running on port ${PORT}`));
   })
   .catch((err) => console.log(err));
   
