@@ -35,3 +35,26 @@ const eventData = {
 };
 
 const testEvent = new Event(eventData);
+
+const ticketData = {
+  price: 100,
+  eventId: testEvent._id,
+  userId: testUser._id,
+  purchaseDate: "2022-06-15",
+};
+
+describe("Ticket model", () => {
+  afterEach(async () => {
+    await db.dropCollections();
+  });
+
+  it("create & save ticket succesfully", async () => {
+    const validTicket = new Ticket(ticketData);
+    const savedTicket = await validTicket.save();
+    expect(savedTicket._id).toBeDefined();
+    expect(savedTicket.price).toBe(validTicket.price);
+    expect(savedTicket.eventId).toBe(validTicket.eventId);
+    expect(savedTicket.userId).toBe(validTicket.userId);
+    expect(savedTicket.purchaseDate).toBe(validTicket.purchaseDate);
+  });
+});
