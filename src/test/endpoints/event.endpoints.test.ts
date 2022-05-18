@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "../../index";
+import { app, stopDb } from "../../index";
 import { User } from "../../schemas/User";
 import { Event } from "../../schemas/Event";
 import mongoose from "mongoose";
@@ -36,6 +36,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await mongoose.connection.db.dropDatabase();
   await mongoose.disconnect();
+  await stopDb();
 });
 
 describe("Event endpoints", () => {
