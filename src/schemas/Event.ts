@@ -8,7 +8,7 @@ export interface IEvent {
   description: string;
   nTickets: number;
   imageUrl: string;
-  userId: Types.ObjectId;
+  user: Types.ObjectId;
 }
 
 const EventSchema = new Schema<IEvent>({
@@ -19,7 +19,7 @@ const EventSchema = new Schema<IEvent>({
   description: { type: String, required: false },
   nTickets: { type: Number, required: true },
   imageUrl: { type: String, required: false },
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 EventSchema.pre("save", async function save(next) {

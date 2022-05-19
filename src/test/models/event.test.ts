@@ -30,7 +30,7 @@ const eventData = {
   nTickets: 1000,
   imageUrl:
     "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
-  userId: testUser._id,
+  user: testUser._id,
 };
 
 const eventWithoutDescription = {
@@ -39,7 +39,7 @@ const eventWithoutDescription = {
   date: new Date("2022-06-15"),
   dateLimitBuy: new Date("2022-06-09"),
   nTickets: 1000,
-  userId: testUser._id,
+  user: testUser._id,
 };
 
 const eventInvalid = {
@@ -48,7 +48,7 @@ const eventInvalid = {
   date: new Date("2022-06-03"),
   dateLimitBuy: new Date("2022-06-09"),
   nTickets: 1000,
-  userId: testUser._id,
+  user: testUser._id,
 };
 
 describe("Event model", () => {
@@ -68,7 +68,7 @@ describe("Event model", () => {
     expect(savedEvent.description).toBe(validEvent.description);
     expect(savedEvent.nTickets).toBe(validEvent.nTickets);
     expect(savedEvent.imageUrl).toBe(validEvent.imageUrl);
-    expect(savedEvent.userId).toBe(validEvent.userId);
+    expect(savedEvent.user).toBe(validEvent.user);
   });
 
   it("create & save event without description & image successfully", async () => {
@@ -80,7 +80,7 @@ describe("Event model", () => {
     expect(savedEvent.date).toBe(validEvent.date);
     expect(savedEvent.dateLimitBuy).toBe(validEvent.dateLimitBuy);
     expect(savedEvent.nTickets).toBe(validEvent.nTickets);
-    expect(savedEvent.userId).toBe(validEvent.userId);
+    expect(savedEvent.user).toBe(validEvent.user);
     expect(savedEvent.description).toBeUndefined();
     expect(savedEvent.imageUrl).toBeUndefined();
   });
