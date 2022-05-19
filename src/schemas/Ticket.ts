@@ -1,5 +1,4 @@
 import { Date, Schema, Types, model } from "mongoose";
-import { Interface } from "readline";
 
 export interface ITicket {
   userId: Types.ObjectId;
