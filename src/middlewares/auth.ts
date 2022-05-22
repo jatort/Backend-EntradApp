@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../types/authRequest";
 const jwt = require("jsonwebtoken");
 
-const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
   // Se obtiene el token del header Authorization
   const header = req.header('Authorization');
   let token;
@@ -25,4 +25,20 @@ const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
   }
 }
 
-module.exports = auth;
+export const isProd = (req: AuthRequest, res: Response, next: NextFunction) => {
+  // Verifica si es un usuario Productora
+  let role = req.user?.role
+  if(role != "prod") return res.status(401).json({error: "Acceso denegado, tiene que ser de producción"});
+  
+  next();
+
+}
+
+export const isClient = (req: AuthRequest, res: Response, next: NextFunction) => {
+  // Verifica si es un usuario Cliente
+  let role = req.user?.role
+  if(role != "client") return res.status(401).json({error: "Acceso denegado, tiene que ser cliente"});
+
+  next();
+
+}

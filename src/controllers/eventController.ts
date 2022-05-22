@@ -1,6 +1,6 @@
 import { Event, IEvent } from "../schemas/Event";
 import mongoose from "mongoose";
-import { Get, Post, Tags, Body, Path, Route } from "tsoa";
+import { Get, Post, Tags, Body, Path, Route, Controller } from "tsoa";
 @Route("api/v1/event")
 @Tags("event")
 export default class EventController {
