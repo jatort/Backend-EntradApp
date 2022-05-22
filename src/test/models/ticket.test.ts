@@ -39,8 +39,8 @@ const testEvent = new Event(eventData);
 
 const ticketData = {
   price: 100,
-  eventId: testEvent._id,
-  userId: testUser._id,
+  event: testEvent._id,
+  user: testUser._id,
   purchaseDate: "2022-06-15",
 };
 
@@ -54,8 +54,8 @@ describe("Ticket model", () => {
     const savedTicket = await validTicket.save();
     expect(savedTicket._id).toBeDefined();
     expect(savedTicket.price).toBe(validTicket.price);
-    expect(savedTicket.eventId).toBe(validTicket.eventId);
-    expect(savedTicket.userId).toBe(validTicket.userId);
+    expect(savedTicket.event).toBe(validTicket.event);
+    expect(savedTicket.user).toBe(validTicket.user);
     expect(savedTicket.purchaseDate).toBe(validTicket.purchaseDate);
   });
 });

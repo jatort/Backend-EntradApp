@@ -1,5 +1,4 @@
-import { Date, Schema, Types, model, Callback } from "mongoose";
-import { Ticket, ITicket } from "./Ticket";
+import { Date, Schema, Types, model } from "mongoose";
 
 export interface IEvent {
   name: string;

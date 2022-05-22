@@ -1,16 +1,16 @@
 import { Date, Schema, Types, model } from "mongoose";
 
 export interface ITicket {
-  userId: Types.ObjectId;
-  eventId: Types.ObjectId;
+  user: Types.ObjectId;
+  event: Types.ObjectId;
   purchaseDate: Date;
   code: string;
   price: number;
 }
 
 const TicketSchema = new Schema<ITicket>({
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: false },
-  eventId: { type: Schema.Types.ObjectId, ref: "Event", required: true },
+  user: { type: Schema.Types.ObjectId, ref: "User", required: false },
+  event: { type: Schema.Types.ObjectId, ref: "Event", required: true },
   purchaseDate: { type: Date, required: false, default: "" },
   code: { type: String, required: false },
   price: { type: Number, required: true },
