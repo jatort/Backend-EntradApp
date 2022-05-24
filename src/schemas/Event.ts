@@ -31,3 +31,15 @@ EventSchema.pre("save", async function save(next) {
 });
 
 export const Event = model<IEvent>("Event", EventSchema);
+
+// Esquema para publicar un evento
+export interface IPublishEvent {
+  name: string;
+  category: string;
+  date: Date;
+  dateLimitBuy: Date;
+  description: string;
+  nTickets: number;
+  imageUrl: string;
+  price: number;
+}
