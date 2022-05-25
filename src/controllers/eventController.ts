@@ -1,16 +1,6 @@
 import { Event, IEvent, IPublishEvent } from "../schemas/Event";
-import mongoose, { Date } from "mongoose";
-import {
-  Get,
-  Post,
-  Tags,
-  Body,
-  Path,
-  Route,
-  Controller,
-  Security,
-  Header,
-} from "tsoa";
+import mongoose from "mongoose";
+import { Get, Post, Tags, Body, Route, Security } from "tsoa";
 @Route("api/v1/event")
 @Tags("event")
 export default class EventController {

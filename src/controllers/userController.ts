@@ -1,6 +1,6 @@
 import { User, UserCreateRequest } from "../schemas/User";
 import mongoose from "mongoose";
-import { Get, Post, Tags, Body, Path, Route } from "tsoa";
+import { Post, Tags, Body, Route } from "tsoa";
 @Route("api/v1/user")
 @Tags("user")
 export default class UserController {

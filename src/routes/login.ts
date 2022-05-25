@@ -1,9 +1,5 @@
 import { Router, Response, Request } from "express";
-import { User } from "../schemas/User";
-import { AuthRequest } from "../types/authRequest";
 import { LoginController } from "../controllers/loginController";
-const auth = require("../middlewares/auth");
-const jwt = require("jsonwebtoken");
 
 const loginRouter = Router();
 

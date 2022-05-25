@@ -2,7 +2,7 @@ import { User, IUser } from "../schemas/User";
 import { LoginResponse, UserData } from "../types/loginResponse";
 import { LoginBody } from "../types/authRequest";
 const jwt = require("jsonwebtoken");
-import { Get, Post, Tags, Body, Path, Route } from "tsoa";
+import { Post, Tags, Body, Route } from "tsoa";
 
 @Route("api/v1/login")
 @Tags("login")
