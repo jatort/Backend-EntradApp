@@ -2,13 +2,13 @@ import { User, IUser } from "../schemas/User";
 import { LoginResponse, UserData } from "../types/loginResponse";
 import { LoginBody } from "../types/authRequest";
 const jwt = require("jsonwebtoken");
-import { Get, Post, Tags, Body, Path, Route } from "tsoa";
+import { Post, Tags, Body, Route } from "tsoa";
 
 @Route("api/v1/login")
 @Tags("login")
 export class LoginController {
-  loginResponse = (message: string, user?: UserData): LoginResponse => {
-    return { message, user };
+  loginResponse = (message: string, token?: string): LoginResponse => {
+    return { message, token };
   };
   @Post("/")
   async loginUser(@Body() body: LoginBody): Promise<LoginResponse> {
@@ -25,7 +25,8 @@ export class LoginController {
       email: user.email,
       role: user.role,
     };
-    return this.loginResponse(message, userData);
+    const token = this.generateToken(userData);
+    return this.loginResponse(message, token);
   }
 
   generateToken = (user: UserData): string => {

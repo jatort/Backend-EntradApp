@@ -3,6 +3,7 @@ import { app, stopDb } from "../../index";
 import { User } from "../../schemas/User";
 import { Event } from "../../schemas/Event";
 import mongoose from "mongoose";
+import { decodeBase64 } from "bcryptjs";
 
 // Usuario generico de prueba para crear un evento
 const userDataClient = {
@@ -39,7 +40,7 @@ const getToken = async (userData: Object) => {
   let resUser = await request(app).post("/api/v1/login").send(userData);
   let token = resUser.body["token"];
   return token;
-}
+};
 
 beforeAll(async () => {
   await Event.deleteMany({});
@@ -52,15 +53,42 @@ afterAll(async () => {
   await stopDb();
 });
 
-describe("Event endpoints", () => {
+describe("Event POST endpoints", () => {
   it("Testing event post endpoint with client user", async () => {
     let token = await getToken(userDataClient);
-    const res = await request(app).post("/api/v1/event").set('Authorization', `Bearer ${token}`).send(eventData);
+    const res = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
     expect(res.statusCode).toEqual(401);
   });
   it("Testing event post without token with prod user", async () => {
     let token = await getToken(userDataProd);
-    const res = await request(app).post("/api/v1/event").set('Authorization', `Bearer ${token}`).send(eventData);
+    const res = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
     expect(res.statusCode).toEqual(201);
+  });
+});
+
+describe("Event GET endpoints", () => {
+  it("Testing event get endpoint with future date", async () => {
+    let token = await getToken(userDataClient);
+    await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
+    const res = await request(app).get("/api/v1/event");
+    expect(res.body.events.length).toBe(1);
+  });
+  it("Testing event get endpoint with past date", async () => {
+    let token = await getToken(userDataClient);
+    await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ ...eventData, date: new Date("2020-05-24") });
+    const res = await request(app).get("/api/v1/event");
+    expect(res.body.events[0].date).toBe("2022-06-15T00:00:00.000Z");
   });
 });
