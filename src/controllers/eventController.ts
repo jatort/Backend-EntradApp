@@ -1,4 +1,5 @@
 import { Event, IEvent, IPublishEvent } from "../schemas/Event";
+import { User } from "../schemas/User";
 import mongoose from "mongoose";
 import { Get, Post, Tags, Body, Route, Security } from "tsoa";
 @Route("api/v1/event")
@@ -32,6 +33,22 @@ export default class EventController {
     */
     const today = new Date();
     const events = await Event.find({ date: { $gte: today } });
+    if (events.length === 0) {
+      throw new Error("No events found");
+    } else {
+      return events;
+    }
+  }
+  @Get("/myevents/")
+  async getMyEvents(user_email: any): Promise<IEvent[]> {
+    /*
+    Retorna los eventos creados por un usuario productor
+    */
+    const user = await User.findOne({ email: user_email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const events = await Event.find({ user: user._id });
     if (events.length === 0) {
       throw new Error("No events found");
     } else {
