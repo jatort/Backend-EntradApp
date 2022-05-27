@@ -47,6 +47,10 @@ beforeAll(async () => {
   await User.deleteMany({});
 });
 
+afterEach(async () => {
+  await Event.deleteMany({});
+});
+
 afterAll(async () => {
   await mongoose.connection.db.dropDatabase();
   await mongoose.disconnect();
@@ -74,7 +78,7 @@ describe("Event POST endpoints", () => {
 
 describe("Event GET endpoints", () => {
   it("Testing event get endpoint with future date", async () => {
-    let token = await getToken(userDataClient);
+    let token = await getToken(userDataProd);
     await request(app)
       .post("/api/v1/event")
       .set("Authorization", `Bearer ${token}`)
@@ -83,12 +87,26 @@ describe("Event GET endpoints", () => {
     expect(res.body.events.length).toBe(1);
   });
   it("Testing event get endpoint with past date", async () => {
-    let token = await getToken(userDataClient);
+    let token = await getToken(userDataProd);
     await request(app)
       .post("/api/v1/event")
       .set("Authorization", `Bearer ${token}`)
       .send({ ...eventData, date: new Date("2020-05-24") });
     const res = await request(app).get("/api/v1/event");
-    expect(res.body.events[0].date).toBe("2022-06-15T00:00:00.000Z");
+    expect(res.body.events).toBe(undefined);
+  });
+});
+
+describe("Event GET myevents", () => {
+  it("Testing event get myevents endpoint with prod user", async () => {
+    let token = await getToken(userDataProd);
+    await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
+    const res = await request(app)
+      .get("/api/v1/event/myevents")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.body.events.length).toBe(1);
   });
 });
