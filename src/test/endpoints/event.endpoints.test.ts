@@ -3,7 +3,6 @@ import { app, stopDb } from "../../index";
 import { User } from "../../schemas/User";
 import { Event } from "../../schemas/Event";
 import mongoose from "mongoose";
-import { decodeBase64 } from "bcryptjs";
 
 // Usuario generico de prueba para crear un evento
 const userDataClient = {
@@ -98,7 +97,7 @@ describe("Event GET endpoints", () => {
 });
 
 describe("Event GET myevents", () => {
-  it("Testing event get myevents endpoint with prod user", async () => {
+  it("Testing event get myevents endpoint with event created", async () => {
     let token = await getToken(userDataProd);
     await request(app)
       .post("/api/v1/event")
@@ -108,5 +107,13 @@ describe("Event GET myevents", () => {
       .get("/api/v1/event/myevents")
       .set("Authorization", `Bearer ${token}`);
     expect(res.body.events.length).toBe(1);
+  });
+  it("Testing event get myevents endpoint with no event created", async () => {
+    let token = await getToken(userDataProd);
+    const res = await request(app)
+      .get("/api/v1/event/myevents")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("No events found");
   });
 });
