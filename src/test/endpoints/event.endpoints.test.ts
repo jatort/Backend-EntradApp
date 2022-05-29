@@ -3,7 +3,6 @@ import { app, stopDb } from "../../index";
 import { User } from "../../schemas/User";
 import { Event } from "../../schemas/Event";
 import mongoose from "mongoose";
-import { decodeBase64 } from "bcryptjs";
 
 // Usuario generico de prueba para crear un evento
 const userDataClient = {
@@ -90,5 +89,23 @@ describe("Event GET endpoints", () => {
       .send({ ...eventData, date: new Date("2020-05-24") });
     const res = await request(app).get("/api/v1/event");
     expect(res.body.events[0].date).toBe("2022-06-15T00:00:00.000Z");
+  });
+});
+
+describe("Event GET id endpoint", () => {
+  it("Testing event get id", async () => {
+    let token = await getToken(userDataProd);
+    let resEvent = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
+    let id = resEvent.body["event"]["_id"];
+    const res = await request(app).get(`/api/v1/event/${id}`);
+    expect(res.body["event"]["_id"]).toBe(id);
+  });
+  it("Testing event get invalid id", async () => {
+    let id = "1234567890sasad";
+    const res = await request(app).get(`/api/v1/event/${id}`);
+    expect(res.statusCode).toEqual(400);
   });
 });

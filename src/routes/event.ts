@@ -45,8 +45,8 @@ eventRouter.get("/:id", async (req: Request< {id: string} >, res: Response) => {
   */
   const controller = new EventController();
   try {
-    const events = await controller.getEvent(req.params.id);
-    return res.status(200).json({ events });
+    const event = await controller.getEvent(req.params.id);
+    return res.status(200).json({ event });
   } catch (err: any) {
     return res.status(400).json({ message: err.message });
   }
