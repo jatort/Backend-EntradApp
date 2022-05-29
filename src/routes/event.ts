@@ -37,6 +37,20 @@ eventRouter.get("/", async (req: Request, res: Response) => {
     return res.status(400).json({ message: err.message });
   }
 });
+
+eventRouter.get("/:id", async (req: Request< {id: string} >, res: Response) => {
+  /*
+  Endpoint para obtener el evento de id 'id', en caso de exito retorna los datos del evento, en caso contrario se retorna el código 400
+  con el mensaje específico de la causa del error.
+  */
+  const controller = new EventController();
+  try {
+    const events = await controller.getEvent(req.params.id);
+    return res.status(200).json({ events });
+  } catch (err: any) {
+    return res.status(400).json({ message: err.message });
+  }
+});
 /*
   FIN EVENTOS
 */

@@ -38,4 +38,16 @@ export default class EventController {
       return events;
     }
   }
+  @Get("/:id")
+  async getEvent(id: string): Promise<IEvent> {
+    /*
+    Retorna el evento de id: 'id'
+    */
+    const event = await Event.findById(id);
+    if (event == null){
+      throw new Error("No events found");
+    } else {
+      return event;
+    }
+  }
 }
