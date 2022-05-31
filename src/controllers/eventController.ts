@@ -1,13 +1,9 @@
 import { Event, IEvent, IPublishEvent } from "../schemas/Event";
 import { User } from "../schemas/User";
 import mongoose from "mongoose";
-import { Get, Post, Tags, Body, Route, Security } from "tsoa";
-@Route("api/v1/event")
-@Tags("event")
+
 export default class EventController {
-  @Post("/")
-  @Security("jwt", ["producer"])
-  async createEvent(@Body() data: IPublishEvent): Promise<IEvent> {
+  async createEvent(data: IPublishEvent): Promise<IEvent> {
     /**
      * Crea un evento a partir de los parámetros recibidos en el body. Se filtran los errores posibles diferenciando
      * sus mensajes de error y en caso de exito se retorna el modelo evento.
@@ -26,7 +22,6 @@ export default class EventController {
       }
     }
   }
-  @Get("/")
   async getEvents(): Promise<IEvent[]> {
     /*
     Retorna todos los eventos.
@@ -39,7 +34,6 @@ export default class EventController {
       return events;
     }
   }
-  @Get("/myevents/")
   async getMyEvents(user_email: any): Promise<IEvent[]> {
     /*
     Retorna los eventos creados por un usuario productor
