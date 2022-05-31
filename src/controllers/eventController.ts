@@ -21,7 +21,8 @@ export default class EventController {
       } else if (err == mongoose.Error.ValidationError) {
         throw new Error("Invalid event data");
       } else {
-        throw new Error("Unknown Event Error");
+        throw new Error(err);
+        //throw new Error("Unknown Event Error");
       }
     }
   }
