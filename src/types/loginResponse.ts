@@ -1,11 +1,9 @@
-import { User } from "../schemas/User";
-
-export interface UserData{
+export interface UserData {
   email: string;
   role: string;
 }
 
 export interface LoginResponse {
-  user?: UserData;
+  token?: string;
   message: string;
 }

@@ -10,6 +10,8 @@ export interface IEvent {
   imageUrl: string;
   user: Types.ObjectId;
   price: number;
+  address: string;
+  city: string;
 }
 
 const EventSchema = new Schema<IEvent>({
@@ -22,6 +24,8 @@ const EventSchema = new Schema<IEvent>({
   imageUrl: { type: String, required: false },
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   price: { type: Number, required: true },
+  address: { type: String, required: true },
+  city: { type: String, required: true }
 });
 
 EventSchema.pre("save", async function save(next) {
@@ -31,3 +35,17 @@ EventSchema.pre("save", async function save(next) {
 });
 
 export const Event = model<IEvent>("Event", EventSchema);
+
+// Esquema para publicar un evento
+export interface IPublishEvent {
+  name: string;
+  category: string;
+  date: Date;
+  dateLimitBuy: Date;
+  description: string;
+  nTickets: number;
+  imageUrl: string;
+  price: number;
+  address: string;
+  city: string;
+}

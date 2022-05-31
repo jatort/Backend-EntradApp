@@ -32,6 +32,9 @@ const eventData = {
   imageUrl:
     "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
   price: 100,
+  address: "Puchuncaví 3244",
+  city: "Santiago"
+
 };
 
 const getToken = async (userData: Object) => {
@@ -39,11 +42,15 @@ const getToken = async (userData: Object) => {
   let resUser = await request(app).post("/api/v1/login").send(userData);
   let token = resUser.body["token"];
   return token;
-}
+};
 
 beforeAll(async () => {
   await Event.deleteMany({});
   await User.deleteMany({});
+});
+
+afterEach(async () => {
+  await Event.deleteMany({});
 });
 
 afterAll(async () => {
@@ -52,15 +59,111 @@ afterAll(async () => {
   await stopDb();
 });
 
-describe("Event endpoints", () => {
+describe("Event POST endpoints", () => {
   it("Testing event post endpoint with client user", async () => {
     let token = await getToken(userDataClient);
-    const res = await request(app).post("/api/v1/event").set('Authorization', `Bearer ${token}`).send(eventData);
+    const res = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
     expect(res.statusCode).toEqual(401);
   });
   it("Testing event post without token with prod user", async () => {
     let token = await getToken(userDataProd);
-    const res = await request(app).post("/api/v1/event").set('Authorization', `Bearer ${token}`).send(eventData);
+    const res = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
     expect(res.statusCode).toEqual(201);
+  });
+});
+
+describe("Event GET endpoints", () => {
+  it("Testing event get endpoint with future date", async () => {
+    let token = await getToken(userDataProd);
+    await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
+    const res = await request(app).get("/api/v1/event");
+    expect(res.body.events.length).toBe(1);
+  });
+  it("Testing event get endpoint with past date", async () => {
+    let token = await getToken(userDataProd);
+    await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ ...eventData, date: new Date("2020-05-24") });
+    const res = await request(app).get("/api/v1/event");
+    expect(res.body.events).toBe(undefined);
+  });
+});
+
+describe("Event GET myevents", () => {
+  it("Testing event get myevents endpoint with event created", async () => {
+    let token = await getToken(userDataProd);
+    await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
+    const res = await request(app)
+      .get("/api/v1/user/myevents")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.body.events.length).toBe(1);
+  });
+  it("Testing event get myevents endpoint with no event created", async () => {
+    let token = await getToken(userDataProd);
+    const res = await request(app)
+      .get("/api/v1/user/myevents")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("No events found");
+  });
+});
+
+describe("Event GET id endpoint", () => {
+  it("Testing event get id user prod", async () => {
+    let token = await getToken(userDataProd);
+    let resEvent = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
+    let id = resEvent.body["event"]["_id"];
+    const res = await request(app)
+      .get(`/api/v1/event/${id}`)
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.body["event"]["_id"]).toBe(id);
+  });
+  it("Testing event get id user client", async () => {
+    let tokenProd = await getToken(userDataProd);
+    let resEvent = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${tokenProd}`)
+      .send(eventData);
+    let token = await getToken(userDataClient);
+    let id = resEvent.body["event"]["_id"];
+    const res = await request(app)
+      .get(`/api/v1/event/${id}`)
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.body["event"]["_id"]).toBe(id);
+  });
+
+  it("Testing event get id any user", async () => {
+    let tokenProd = await getToken(userDataProd);
+    let resEvent = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${tokenProd}`)
+      .send(eventData);
+    let id = resEvent.body["event"]["_id"];
+    const res = await request(app)
+      .get(`/api/v1/event/${id}`);
+    expect(res.body["event"]["_id"]).toBe(id);
+  });
+
+
+  it("Testing event get invalid id", async () => {
+    let id = "1234567890sasad";
+    const res = await request(app).get(`/api/v1/event/${id}`);
+    expect(res.statusCode).toEqual(400);
   });
 });

@@ -1,13 +1,9 @@
 import { User, UserCreateRequest } from "../schemas/User";
+import { Event, IEvent, IPublishEvent } from "../schemas/Event";
 import mongoose from "mongoose";
-import { Get, Post, Tags, Body, Path, Route } from "tsoa";
-@Route("api/v1/user")
-@Tags("user")
+
 export default class UserController {
-  @Post("/")
-  public async createUser(
-    @Body() body: UserCreateRequest
-  ): Promise<UserCreateRequest> {
+  public async createUser(body: UserCreateRequest): Promise<UserCreateRequest> {
     /*
     Crea un usuario a partir de los parámetros recibidos en el json data. Se filtran los errores posibles diferenciando 
     sus mensajes de error y en caso de exito se retorna el modelo usuario.
@@ -25,6 +21,22 @@ export default class UserController {
         throw new Error("Invalid email");
       }
       throw err;
+    }
+  }
+
+  async getMyEvents(user_email: any): Promise<IEvent[]> {
+    /*
+    Retorna los eventos creados por un usuario productor
+    */
+    const user = await User.findOne({ email: user_email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const events = await Event.find({ user: user._id });
+    if (events.length === 0) {
+      throw new Error("No events found");
+    } else {
+      return events;
     }
   }
 }
