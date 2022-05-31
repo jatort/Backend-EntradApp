@@ -41,6 +41,12 @@
           "price": {
             "type": "number",
             "format": "double"
+          },
+          "city": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
           }
         },
         "required": [
@@ -52,7 +58,9 @@
           "nTickets",
           "imageUrl",
           "user",
-          "price"
+          "price",
+          "city",
+          "address"
         ],
         "type": "object",
         "additionalProperties": false
@@ -86,6 +94,12 @@
           "price": {
             "type": "number",
             "format": "double"
+          },
+          "city": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
           }
         },
         "required": [
@@ -96,7 +110,9 @@
           "description",
           "nTickets",
           "imageUrl",
-          "price"
+          "price",
+          "city",
+          "address"
         ],
         "type": "object",
         "additionalProperties": false
