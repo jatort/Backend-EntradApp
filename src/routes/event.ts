@@ -52,21 +52,6 @@ eventRouter.get("/:id", async (req: Request< {id: string} >, res: Response) => {
   }
 });
 
-eventRouter.get(
-  "/myevents",
-  auth,
-  isProd,
-  async (req: AuthRequest, res: Response) => {
-    const controller = new EventController();
-    try {
-      const events = await controller.getMyEvents(req.user?.email);
-      return res.status(200).json({ events });
-    } catch (err: any) {
-      return res.status(400).json({ message: err.message });
-    }
-  }
-);
-
 /*
   FIN EVENTOS
 */

@@ -1,4 +1,5 @@
 import { User, UserCreateRequest } from "../schemas/User";
+import { Event, IEvent, IPublishEvent } from "../schemas/Event";
 import mongoose from "mongoose";
 
 export default class UserController {
@@ -20,6 +21,22 @@ export default class UserController {
         throw new Error("Invalid email");
       }
       throw err;
+    }
+  }
+
+  async getMyEvents(user_email: any): Promise<IEvent[]> {
+    /*
+    Retorna los eventos creados por un usuario productor
+    */
+    const user = await User.findOne({ email: user_email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const events = await Event.find({ user: user._id });
+    if (events.length === 0) {
+      throw new Error("No events found");
+    } else {
+      return events;
     }
   }
 }
