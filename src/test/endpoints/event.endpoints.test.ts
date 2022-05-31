@@ -107,16 +107,63 @@ describe("Event GET myevents", () => {
       .set("Authorization", `Bearer ${token}`)
       .send(eventData);
     const res = await request(app)
-      .get("/api/v1/event/myevents")
+      .get("/api/v1/user/myevents")
       .set("Authorization", `Bearer ${token}`);
     expect(res.body.events.length).toBe(1);
   });
   it("Testing event get myevents endpoint with no event created", async () => {
     let token = await getToken(userDataProd);
     const res = await request(app)
-      .get("/api/v1/event/myevents")
+      .get("/api/v1/user/myevents")
       .set("Authorization", `Bearer ${token}`);
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe("No events found");
+  });
+});
+
+describe("Event GET id endpoint", () => {
+  it("Testing event get id user prod", async () => {
+    let token = await getToken(userDataProd);
+    let resEvent = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(eventData);
+    let id = resEvent.body["event"]["_id"];
+    const res = await request(app)
+      .get(`/api/v1/event/${id}`)
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.body["event"]["_id"]).toBe(id);
+  });
+  it("Testing event get id user client", async () => {
+    let tokenProd = await getToken(userDataProd);
+    let resEvent = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${tokenProd}`)
+      .send(eventData);
+    let token = await getToken(userDataClient);
+    let id = resEvent.body["event"]["_id"];
+    const res = await request(app)
+      .get(`/api/v1/event/${id}`)
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.body["event"]["_id"]).toBe(id);
+  });
+
+  it("Testing event get id any user", async () => {
+    let tokenProd = await getToken(userDataProd);
+    let resEvent = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${tokenProd}`)
+      .send(eventData);
+    let id = resEvent.body["event"]["_id"];
+    const res = await request(app)
+      .get(`/api/v1/event/${id}`);
+    expect(res.body["event"]["_id"]).toBe(id);
+  });
+
+
+  it("Testing event get invalid id", async () => {
+    let id = "1234567890sasad";
+    const res = await request(app).get(`/api/v1/event/${id}`);
+    expect(res.statusCode).toEqual(400);
   });
 });
