@@ -4,13 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "predev": "npm run swagger",
-    "prebuild": "npm run swagger",
     "dev": "ts-node-dev --poll src/index.ts",
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
-    "test": "jest --runInBand ./src/test",
-    "swagger": "tsoa spec"
+    "test": "jest --runInBand ./src/test"
   },
   "repository": {
     "type": "git",
@@ -28,12 +25,11 @@
     "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.3.2",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.6.4",
     "morgan": "^1.10.0",
+    "rimraf": "^3.0.2",
     "supertest": "^6.2.3",
     "swagger-ui-express": "^4.4.0",
-    "tsoa": "^4.0.0",
+    "typescript": "^4.6.4",
     "validator": "^13.7.0"
   },
   "devDependencies": {
