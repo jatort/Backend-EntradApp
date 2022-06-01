@@ -193,6 +193,6 @@ describe("Event GET id endpoint", () => {
   it("Testing event get invalid id", async () => {
     let id = "1234567890sasad";
     const res = await request(app).get(`/api/v1/event/${id}`);
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(400);
   });
 });
