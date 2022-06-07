@@ -87,6 +87,7 @@ eventRouter.post("/apiFlow/payment_confirm", async (req: Request, res: Response)
     let params = {
       token: req.body.token
     };
+    console.log('el token creo que puede ser o bien', req.body.token, 'o si no', req.query.token)
     let serviceName = "payment/getStatus";
     const flowApi = new FlowApi(config);
     let response = await flowApi.send(serviceName, params, "GET");
@@ -101,11 +102,10 @@ eventRouter.post("/apiFlow/payment_confirm", async (req: Request, res: Response)
 eventRouter.post("/apiFlow/result", async (req: Request, res: Response) => {
   try {
     let params = {
-      token: req.body.token
+      token: req.body.token 
     };
     let serviceName = "payment/getStatus";
     const flowApi = new FlowApi(config);
-    console.log('params es', params)
     let response = await flowApi.send(serviceName, params, "GET");
     //Actualiza los datos en su sistema
     console.log("response es", response);
