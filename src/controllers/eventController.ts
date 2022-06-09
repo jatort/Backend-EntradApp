@@ -12,9 +12,7 @@ export default class EventController {
       await event.save();
       return event;
     } catch (err: any) {
-      if (err.code === 11000) {
-        throw new Error("event already exists");
-      } else if (err == mongoose.Error.ValidationError) {
+      if (err == mongoose.Error.ValidationError) {
         throw new Error("Invalid event data");
       } else {
         throw new Error("Unknown Event Error");
