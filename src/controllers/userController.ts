@@ -1,10 +1,14 @@
 import { IUser, User, UserCreateRequest } from "../schemas/User";
 import { Event, IEvent, IPublishEvent } from "../schemas/Event";
 import mongoose from "mongoose";
-import {UserResponse} from "../types/userResponse"
+import { UserResponse } from "../types/userResponse";
 
 export default class UserController {
-  UserResponse = (username: string, email: string, role: string): UserResponse => {
+  UserResponse = (
+    username: string,
+    email: string,
+    role: string
+  ): UserResponse => {
     return { username, email, role };
   };
 
@@ -34,18 +38,18 @@ export default class UserController {
     Retorna el user de id: 'id'
     */
     const user = await User.findById(id);
-    if (user == null){
+    if (user == null) {
       throw new Error("No user found");
     } else {
       return this.UserResponse(user.username, user.email, user.role);
     }
   }
 
-  async getMyEvents(id: string): Promise<IEvent[]> {
+  async getMyEvents(user_email: string | undefined): Promise<IEvent[]> {
     /*
     Retorna los eventos creados por un usuario productor
     */
-    const user = await User.findById(id);
+    const user = await User.findOne({ email: user_email });
     if (!user) {
       throw new Error("User not found");
     }
@@ -54,6 +58,18 @@ export default class UserController {
       throw new Error("No events found");
     } else {
       return events;
+    }
+  }
+
+  async getProd(email: any): Promise<IUser | Error> {
+    /*
+    Retorna el usuario productor de email: 'email'
+    */
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      throw new Error("User not found");
+    } else {
+      return user;
     }
   }
 }

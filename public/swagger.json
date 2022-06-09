@@ -404,9 +404,9 @@
         ]
       }
     },
-    "/user/{id}/event": {
+    "/prod/myevents": {
       "get": {
-        "operationId": "GetUserEvents",
+        "operationId": "GetProducerEvents",
         "responses": {
           "200": {
             "description": "Ok",
@@ -422,15 +422,10 @@
             }
           }
         },
-        "tags": ["user"],
-        "parameters": [
+        "tags": ["user", "producer"],
+        "security": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "bearerAuth": []
           }
         ]
       }

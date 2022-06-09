@@ -16,7 +16,7 @@ userRouter.post("/", async (req: Request, res: Response) => {
   }
 });
 
-userRouter.get("/:id", async (req: Request< {id: string} >, res: Response) => {
+userRouter.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
   /*
   Endpoint para obtener el usuario de id 'id', en caso de exito retorna los datos del evento, en caso contrario se retorna el código 400
   con el mensaje específico de la causa del error.
@@ -29,20 +29,5 @@ userRouter.get("/:id", async (req: Request< {id: string} >, res: Response) => {
     return res.status(400).json({ message: err.message });
   }
 });
-
-userRouter.get(
-  "/:id/event",
-  auth,
-  isProd,
-  async (req: Request< {id: string} >, res: Response) => {
-    const controller = new UserController();
-    try {
-      const events = await controller.getMyEvents(req.params.id);
-      return res.status(200).json({ events });
-    } catch (err: any) {
-      return res.status(400).json({ message: err.message });
-    }
-  }
-);
 
 module.exports = userRouter;
