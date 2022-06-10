@@ -34,7 +34,6 @@ const eventData = {
   price: 100,
   address: "Puchuncaví 3244",
   city: "Santiago"
-
 };
 
 const invalidEventData = {
@@ -65,6 +64,7 @@ beforeAll(async () => {
 
 afterEach(async () => {
   await Event.deleteMany({});
+  await User.deleteMany({});
 });
 
 afterAll(async () => {
@@ -118,35 +118,6 @@ describe("Event GET endpoints", () => {
       .send({ ...eventData, date: new Date("2020-05-24") });
     const res = await request(app).get("/api/v1/event");
     expect(res.body.events).toBe(undefined);
-  });
-});
-
-describe("Event GET myevents", () => {
-  it("Testing event get myevents endpoint with event created", async () => {
-    let token = await getToken(userDataProd);
-    await request(app)
-      .post("/api/v1/event")
-      .set("Authorization", `Bearer ${token}`)
-      .send(eventData);
-    const res = await request(app)
-      .get("/api/v1/user/myevents")
-      .set("Authorization", `Bearer ${token}`);
-    expect(res.body.events.length).toBe(1);
-  });
-  it("Testing event get myevents endpoint with no event created", async () => {
-    let token = await getToken(userDataProd);
-    const res = await request(app)
-      .get("/api/v1/user/myevents")
-      .set("Authorization", `Bearer ${token}`);
-    expect(res.statusCode).toBe(400);
-    expect(res.body.message).toBe("No events found");
-  });
-  it("Testing event get myevents endpoint with invalid token", async () => {
-    let token = "thisisainvalidtoken"
-    const res = await request(app)
-      .get("/api/v1/user/myevents")
-      .set("Authorization", `Bearer ${token}`);
-    expect(res.statusCode).toBe(400);
   });
 });
 

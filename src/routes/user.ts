@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import UserController from "../controllers/userController";
 import { AuthRequest } from "../types/authRequest";
+import { UserResponse } from "../types/userResponse";
 import { auth, isProd } from "../middlewares/auth";
 
 const userRouter = Router();
@@ -15,19 +16,18 @@ userRouter.post("/", async (req: Request, res: Response) => {
   }
 });
 
-userRouter.get(
-  "/myevents",
-  auth,
-  isProd,
-  async (req: AuthRequest, res: Response) => {
-    const controller = new UserController();
-    try {
-      const events = await controller.getMyEvents(req.user?.email);
-      return res.status(200).json({ events });
-    } catch (err: any) {
-      return res.status(400).json({ message: err.message });
-    }
+userRouter.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
+  /*
+  Endpoint para obtener el usuario de id 'id', en caso de exito retorna los datos del evento, en caso contrario se retorna el código 400
+  con el mensaje específico de la causa del error.
+  */
+  const controller = new UserController();
+  try {
+    const user = await controller.getUser(req.params.id);
+    return res.status(200).json({ user });
+  } catch (err: any) {
+    return res.status(400).json({ message: err.message });
   }
-);
+});
 
 module.exports = userRouter;

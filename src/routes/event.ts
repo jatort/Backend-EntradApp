@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { AuthRequest } from "../types/authRequest";
 import EventController from "../controllers/eventController";
+import UserController from "../controllers/userController";
 import { auth, isProd } from "../middlewares/auth";
 import { User } from "../schemas/User";
 
@@ -15,8 +16,9 @@ eventRouter.post("/", auth, isProd, async (req: AuthRequest, res: Response) => {
   con el mensaje específico de la causa del error.
   */
   const controller = new EventController();
+  const userController = new UserController();
   try {
-    req.body.user = await User.findOne({ email: req.user?.email });
+    req.body.user = await userController.getProd(req.user?.email);
     const event = await controller.createEvent(req.body);
     return res.status(201).json({ event });
   } catch (err: any) {
@@ -38,7 +40,7 @@ eventRouter.get("/", async (req: Request, res: Response) => {
   }
 });
 
-eventRouter.get("/:id", async (req: Request< {id: string} >, res: Response) => {
+eventRouter.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
   /*
   Endpoint para obtener el evento de id 'id', en caso de exito retorna los datos del evento, en caso contrario se retorna el código 400
   con el mensaje específico de la causa del error.
