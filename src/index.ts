@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import morgan from "morgan";
 import routes from "./routes/index";
 import swaggerUi from "swagger-ui-express";
+const bodyParser = require("body-parser");
 
 dotenv.config();
 export const app = express();
@@ -12,6 +13,7 @@ export const app = express();
 app.use(express.json()); // for parsing application/json
 app.use(morgan("tiny")); // routes log
 app.use(express.static("public")); // static files
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const { MongoMemoryServer } = require("mongodb-memory-server");
 let mongo: any = undefined;
