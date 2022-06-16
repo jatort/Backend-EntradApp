@@ -24,8 +24,8 @@ const userDataProd = {
 const eventData = {
   name: "Lollapalooza",
   category: "Music",
-  date: new Date("2022-06-15"),
-  dateLimitBuy: new Date("2022-06-09"),
+  date: new Date("2022-08-15"),
+  dateLimitBuy: new Date("2022-08-09"),
   description:
     "Lollapalooza es un festival musical de los Estados Unidos que originalmente ofrecía bandas de rock alternativo, indie y punk rock; también hay actuaciones cómicas y de danza.",
   nTickets: 1000,
@@ -39,8 +39,8 @@ const eventData = {
 const invalidEventData = {
   name: "Lollapalooza",
   category: "Music",
-  date: new Date("2022-06-15"),
-  dateLimitBuy: new Date("2022-06-09"),
+  date: new Date("2022-08-15"),
+  dateLimitBuy: new Date("2022-08-09"),
   description:
     "Lollapalooza es un festival musical de los Estados Unidos que originalmente ofrecía bandas de rock alternativo, indie y punk rock; también hay actuaciones cómicas y de danza.",
   nTickets: 1000,
@@ -103,7 +103,7 @@ describe("Event POST endpoints", () => {
 describe("Event GET endpoints", () => {
   it("Testing event get endpoint with future date", async () => {
     let token = await getToken(userDataProd);
-    await request(app)
+    const res2 = await request(app)
       .post("/api/v1/event")
       .set("Authorization", `Bearer ${token}`)
       .send(eventData);

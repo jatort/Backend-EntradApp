@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import { ITicket, Ticket } from "../../schemas/Ticket";
-import { IUser, User } from "../../schemas/User";
-import { IEvent, Event } from "../../schemas/Event";
 const db = require("../setup/db");
+import { Ticket } from "../../schemas/Ticket";
+import { User } from "../../schemas/User";
+import { Event } from "../../schemas/Event";
+import { Order } from "../../schemas/Order"
 
 beforeAll(async () => {
   await db.setUp();
@@ -44,18 +44,31 @@ const ticketData = {
   purchaseDate: "2022-06-15",
 };
 
-describe("Ticket model", () => {
+const validTicket = new Ticket(ticketData);
+
+const orderData = {
+  user: testUser._id,
+  event: testEvent._id,
+  nTickets: 4,
+  amount: validTicket.price * 4,
+  currency: "CLP",
+  isPending: true
+};
+
+describe("Order model", () => {
   afterEach(async () => {
     await db.dropCollections();
   });
 
-  it("create & save ticket succesfully", async () => {
-    const validTicket = new Ticket(ticketData);
-    const savedTicket = await validTicket.save();
-    expect(savedTicket._id).toBeDefined();
-    expect(savedTicket.price).toBe(validTicket.price);
-    expect(savedTicket.event).toBe(validTicket.event);
-    expect(savedTicket.user).toBe(validTicket.user);
-    expect(savedTicket.purchaseDate).toBe(validTicket.purchaseDate);
+  it("create & save order succesfully", async () => {
+    const order = new Order(orderData);
+    const savedOrder = await order.save();
+    expect(savedOrder._id).toBeDefined();
+    expect(savedOrder.user).toBe(order.user);
+    expect(savedOrder.event).toBe(order.event);
+    expect(savedOrder.nTickets).toBe(order.nTickets);
+    expect(savedOrder.amount).toBe(order.amount);
+    expect(savedOrder.currency).toBe(order.currency);
+    expect(savedOrder.isPending).toBe(order.isPending);
   });
 });

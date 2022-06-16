@@ -6,7 +6,7 @@ import { auth, isProd } from "../middlewares/auth";
 import { User } from "../schemas/User";
 
 const FlowApi = require("flowcl-node-api-client");
-const config = require("./config.json");
+const config = require("./config.ts");
 
 const eventRouter = Router();
 
