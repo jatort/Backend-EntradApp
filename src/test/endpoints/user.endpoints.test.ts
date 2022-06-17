@@ -78,7 +78,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await mongoose.connection.db.dropDatabase();
+  // await mongoose.connection.db.dropDatabase();
   await mongoose.disconnect();
   await stopDb();
 });
@@ -174,11 +174,10 @@ describe("Event GET prod/myevents", () => {
 });
 
 describe("Delete user test", () => {
-  /* it("deleting client user with current tickets should fail", async () => {
+  it("deleting client user with current tickets should fail", async () => {
     const r1 = await request(app).post("/api/v1/user").send(userData);
     const user = r1.body;
     const userToken = await getToken(userData);
-    console.log("TOKEN", userToken);
     const myEvent = new Event({ ...eventData, user: user._id });
     await myEvent.save();
     const myTicket = new Ticket({
@@ -191,10 +190,9 @@ describe("Delete user test", () => {
     const res = await request(app)
       .delete("/api/v1/user")
       .set("Authorization", `Bearer ${userToken}`);
-    console.log(res.body);
     expect(res.statusCode).toBe(400);
     expect(res.body.message).toBe("User has active tickets");
-  }); */
+  });
   it("deleting client user with no current tickets should succeed", async () => {
     const r1 = await request(app).post("/api/v1/user").send(userData);
     const user = r1.body;
