@@ -1,5 +1,8 @@
 import { Event, IEvent, IPublishEvent } from "../schemas/Event";
 import mongoose from "mongoose";
+import { Ticket } from "../schemas/Ticket";
+import { IOrder, Order } from "../schemas/Order";
+import { User } from "../schemas/User";
 
 export default class EventController {
   async createEvent(data: IPublishEvent): Promise<IEvent> {
@@ -41,6 +44,53 @@ export default class EventController {
       throw new Error("No events found");
     } else {
       return event;
+    }
+  }
+
+  async buyTickets(id: string, quantity: number, userEmail: string | undefined): Promise<IOrder> {
+    /*
+      Crea una orden y redirige a Flow
+    */
+    const user = await User.findOne({ email: userEmail });
+    if (!user){
+      throw new Error("No user found");
+    }
+
+    const event = await Event.findById(id);
+    if (!event){
+      throw new Error("No event found");
+    }
+
+    if (event.nTickets <= 0){
+      throw new Error("No tickets available");
+    }
+
+    if (event.nTickets - event.currentTickets < quantity){
+      throw new Error(`Only ${event.nTickets - event.currentTickets} available`);
+    }
+
+    let orderData = {
+      user: user._id,
+      event: event._id,
+      nTickets: quantity,
+      amount: quantity * event.price,
+      currency: "CLP",
+      isPending: true,
+      commerceOrder: Math.floor(Math.random() * (2000 - 1100 + 1)) + 1100,
+    }
+
+    const order = new Order(orderData);
+
+    try {
+      await order.save();
+      await event.updateOne({currentTickets: event.currentTickets + quantity});
+      return order;
+    } catch (err: any) {
+      if (err == mongoose.Error.ValidationError) {
+        throw new Error("Invalid order data");
+      } else {
+        throw new Error("Unknown Order Error");
+      }
     }
   }
 }

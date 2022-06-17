@@ -6,6 +6,7 @@ export interface IOrder {
   nTickets: number;
   amount: number;
   currency: string;
+  commerceOrder: string;
   isPending: boolean;
 }
 
@@ -15,6 +16,7 @@ const OrderSchema = new Schema<IOrder>({
   nTickets: { type: Number, required: true },
   amount: { type: Number, required: true },
   currency: { type: String, required: true},
+  commerceOrder: {type: String, required: true},
   isPending: { type: Schema.Types.Boolean, required: true}
 });
 
