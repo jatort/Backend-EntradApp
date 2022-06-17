@@ -81,14 +81,13 @@ export default class UserController {
       throw new Error("User not found");
     } else {
       // Chequear tipo de usuario.
-      if (user.role === "producer") {
+      if (user.role === "prod") {
         // Si es productor, revisar si tiene eventos vigentes. (borrar usuario)
         const today = new Date();
         const currentEvents = await Event.find({
           user: user._id,
           date: { $gte: today },
         });
-        console.log("CurrentEvents from producer: ", currentEvents);
         if (currentEvents.length > 0) {
           throw new Error("User has active events");
         }
@@ -101,7 +100,6 @@ export default class UserController {
           user: user._id,
           date: { $gte: today },
         });
-        console.log("CurrentTickets from client: ", currentTickets);
         if (currentTickets.length > 0) {
           throw new Error("User has active tickets");
         }
