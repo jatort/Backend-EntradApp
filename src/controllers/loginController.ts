@@ -10,7 +10,7 @@ export class LoginController {
   async loginUser(body: LoginBody): Promise<LoginResponse> {
     // Validacion de existencia del usuario
     let message = "success";
-    const user = await User.findOne({ email: body.email });
+    const user = await User.findOne({ email: body.email, status: "active" });
     if (!user) return this.loginResponse("User not found.");
 
     // Validacion de la contrasena
