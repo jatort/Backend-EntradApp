@@ -45,6 +45,18 @@ export default class UserController {
     }
   }
 
+  public async getProfile(email: string | undefined): Promise<UserResponse> {
+    /*
+    Retorna el usuario de email 'email'
+    */
+    const user = await User.findOne({ email: email });
+    if (user == null) {
+      throw new Error("No user found");
+    } else {
+      return this.UserResponse(user.username, user.email, user.role);
+    }
+  }
+
   async getMyEvents(user_email: string | undefined): Promise<IEvent[]> {
     /*
     Retorna los eventos creados por un usuario productor
