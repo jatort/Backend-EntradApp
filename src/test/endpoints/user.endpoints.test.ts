@@ -1,14 +1,18 @@
 import request from "supertest";
 import { app, stopDb } from "../../index";
 import { User } from "../../schemas/User";
+import { Event } from "../../schemas/Event";
 import mongoose from "mongoose";
+import { Ticket } from "../../schemas/Ticket";
+import { getToken } from "./event.endpoints.test";
 // Usuario generico de prueba para crear un evento
 
 const userData = {
   username: "TekLoon",
   email: "tekloon@gmail.com",
-  role: "common",
+  role: "client",
   password: "TekLoon123",
+  status: "active",
 };
 
 const prodData = {
@@ -16,33 +20,34 @@ const prodData = {
   email: "tekloon@gmail.com",
   role: "prod",
   password: "TekLoon123",
+  status: "active",
 };
 
 const userInvalidData = {
   username: "TekLoon",
   email: "tekloongmailcom",
-  role: "common",
+  role: "client",
   password: "TekLooninvalid",
 };
 
 const userInvalidEmail = {
   username: "TekLoon",
   email: "tekloongmailcom",
-  role: "common",
+  role: "client",
   password: "TekLooninvalid",
 };
 
 const userInvalidPassword = {
   username: "TekLoon",
   email: "tekloon@gmail.com",
-  role: "common",
+  role: "client",
   password: "TekLooninvalid",
 };
 
 const invalidUserNoCreated = {
   username: "TekLoonNotCreated",
   email: "tekloonnotcreated@gmail.com",
-  role: "common",
+  role: "client",
   password: "TekLoon123",
 };
 
@@ -50,11 +55,11 @@ const invalidUserNoCreated = {
 const eventData = {
   name: "Lollapalooza",
   category: "Music",
-  date: new Date("2022-06-15"),
-  dateLimitBuy: new Date("2022-06-09"),
+  date: new Date("2022-06-20"),
+  dateLimitBuy: new Date("2022-06-10"),
   description:
     "Lollapalooza es un festival musical de los Estados Unidos que originalmente ofrecía bandas de rock alternativo, indie y punk rock; también hay actuaciones cómicas y de danza.",
-  nTickets: 1000,
+  nTickets: 10,
   imageUrl:
     "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
   price: 100,
@@ -62,7 +67,13 @@ const eventData = {
   city: "Santiago",
 };
 
+const ticketData = {
+  price: 100,
+  purchaseDate: "2022-06-15",
+};
+
 beforeAll(async () => {
+  await Event.deleteMany({});
   await User.deleteMany({});
 });
 
@@ -73,6 +84,7 @@ afterAll(async () => {
 });
 
 afterEach(async () => {
+  await Event.deleteMany({});
   await User.deleteMany({});
 });
 
@@ -158,5 +170,84 @@ describe("Event GET prod/myevents", () => {
       .get(`/api/v1/prod/myevents`)
       .set("Authorization", `Bearer ${token}`);
     expect(res.statusCode).toBe(400);
+  });
+});
+
+describe("Delete user test", () => {
+  /* it("deleting client user with current tickets should fail", async () => {
+    const r1 = await request(app).post("/api/v1/user").send(userData);
+    const user = r1.body;
+    const userToken = await getToken(userData);
+    console.log("TOKEN", userToken);
+    const myEvent = new Event({ ...eventData, user: user._id });
+    await myEvent.save();
+    const myTicket = new Ticket({
+      ...ticketData,
+      user: user._id,
+      event: myEvent._id,
+      date: myEvent.date,
+    });
+    await myTicket.save();
+    const res = await request(app)
+      .delete("/api/v1/user")
+      .set("Authorization", `Bearer ${userToken}`);
+    console.log(res.body);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("User has active tickets");
+  }); */
+  it("deleting client user with no current tickets should succeed", async () => {
+    const r1 = await request(app).post("/api/v1/user").send(userData);
+    const user = r1.body;
+    const userToken = await getToken(userData);
+    const res = await request(app)
+      .delete("/api/v1/user")
+      .set("Authorization", `Bearer ${userToken}`);
+    expect(res.statusCode).toBe(202);
+    expect(res.body.message).toBe("User deleted");
+    const userDeleted = await User.findOne({ email: user.email });
+    expect(userDeleted).toBeDefined();
+    expect(userDeleted?.status).toBe("deleted");
+  });
+  it("deleting admin user with no current events should succeed", async () => {
+    const r2 = await request(app).post("/api/v1/user").send(prodData);
+    const prod = r2.body;
+    const prodToken = await getToken(prodData);
+    const myEvent = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${prodToken}`)
+      .send({
+        ...eventData,
+        user: prod._id,
+        date: new Date("2022-01-20"),
+        dateLimitBuy: new Date("2022-01-15"),
+      });
+    const res = await request(app)
+      .delete("/api/v1/user")
+      .set("Authorization", `Bearer ${prodToken}`);
+    expect(res.statusCode).toBe(202);
+    expect(res.body.message).toBe("User deleted");
+    const userDeleted = await User.findOne({ email: prod.email });
+    expect(userDeleted).toBeNull();
+  });
+  it("deleting admin user with current events should fail", async () => {
+    const r2 = await request(app).post("/api/v1/user").send(prodData);
+    const prod = r2.body;
+    const prodToken = await getToken(prodData);
+    const myEvent = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${prodToken}`)
+      .send({
+        ...eventData,
+        user: prod._id,
+        date: new Date("2022-06-20"),
+        dateLimitBuy: new Date("2022-06-15"),
+      });
+    const res = await request(app)
+      .delete("/api/v1/user")
+      .set("Authorization", `Bearer ${prodToken}`);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("User has active events");
+    const userDeleted = await User.findOne({ email: prod.email });
+    expect(userDeleted).toBeDefined();
   });
 });
