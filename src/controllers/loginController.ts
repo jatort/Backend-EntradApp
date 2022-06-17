@@ -32,7 +32,8 @@ export class LoginController {
         email: user.email,
         role: user.role,
       },
-      process.env.TOKEN
+      process.env.TOKEN,
+      { expiresIn: "7d" }
     );
 
     return token;
