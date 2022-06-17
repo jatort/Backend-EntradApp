@@ -30,4 +30,14 @@ userRouter.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
   }
 });
 
+userRouter.delete("/", auth, async (req: AuthRequest, res: Response) => {
+  const controller = new UserController();
+  try {
+    const response = await controller.deleteUser(req.user?.email);
+    return res.status(202).send(response);
+  } catch (err: any) {
+    return res.status(400).send({ message: err.message });
+  }
+});
+
 module.exports = userRouter;
