@@ -94,5 +94,22 @@ orderRouter.post("/result", async (req: Request, res: Response) => {
   }
 });
 
+orderRouter.post(
+  "/payment_confirm",
+  async (req: Request, res: Response) => {
+    try {
+      let params = {
+        token: req.body.token,
+      };
+      let serviceName = "payment/getStatus";
+      const flowApi = new FlowApi(config);
+      let response = await flowApi.send(serviceName, params, "GET");
+      //Actualiza los datos en su sistema
+      res.json(response);
+    } catch (error: any) {
+      res.json({ error });
+    }
+  }
+);
 
 module.exports = orderRouter;
