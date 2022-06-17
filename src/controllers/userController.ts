@@ -49,7 +49,7 @@ export default class UserController {
     /*
     Retorna el usuario de email 'email'
     */
-    const user = await User.findById({ email: email });
+    const user = await User.findOne({ email: email });
     if (user == null) {
       throw new Error("No user found");
     } else {
