@@ -20,6 +20,9 @@ const userDataProd = {
   password: "TekLoon123",
 };
 
+const client = new User(userDataClient);
+const prod = new User(userDataProd);
+
 // Evento generico con usuario cliente para testear los endpoints
 const eventData = {
   name: "Lollapalooza",
@@ -33,7 +36,7 @@ const eventData = {
     "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
   price: 100,
   address: "Puchuncaví 3244",
-  city: "Santiago"
+  city: "Santiago",
 };
 
 const invalidEventData = {
@@ -47,10 +50,10 @@ const invalidEventData = {
   imageUrl:
     "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
   price: 100,
-  city: "Santiago"
+  city: "Santiago",
 };
 
-const getToken = async (userData: Object) => {
+export const getToken = async (userData: Object) => {
   await request(app).post("/api/v1/user").send(userData);
   let resUser = await request(app).post("/api/v1/login").send(userData);
   let token = resUser.body["token"];
@@ -75,7 +78,7 @@ afterAll(async () => {
 
 describe("Event POST endpoints", () => {
   it("Testing event post endpoint with client user", async () => {
-    let token = await getToken(userDataClient);
+    let token = await getToken({ ...userDataClient, user: client._id });
     const res = await request(app)
       .post("/api/v1/event")
       .set("Authorization", `Bearer ${token}`)
@@ -83,7 +86,7 @@ describe("Event POST endpoints", () => {
     expect(res.statusCode).toEqual(401);
   });
   it("Testing event post without token with prod user", async () => {
-    let token = await getToken(userDataProd);
+    let token = await getToken({ ...userDataProd, user: prod._id });
     const res = await request(app)
       .post("/api/v1/event")
       .set("Authorization", `Bearer ${token}`)
@@ -106,7 +109,7 @@ describe("Event GET endpoints", () => {
     const res2 = await request(app)
       .post("/api/v1/event")
       .set("Authorization", `Bearer ${token}`)
-      .send(eventData);
+      .send({ ...eventData, user: prod._id });
     const res = await request(app).get("/api/v1/event");
     expect(res.body.events.length).toBe(1);
   });
@@ -155,11 +158,9 @@ describe("Event GET id endpoint", () => {
       .set("Authorization", `Bearer ${tokenProd}`)
       .send(eventData);
     let id = resEvent.body["event"]["_id"];
-    const res = await request(app)
-      .get(`/api/v1/event/${id}`);
+    const res = await request(app).get(`/api/v1/event/${id}`);
     expect(res.body["event"]["_id"]).toBe(id);
   });
-
 
   it("Testing event get invalid id", async () => {
     let id = "1234567890sasad";

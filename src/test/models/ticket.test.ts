@@ -42,6 +42,7 @@ const ticketData = {
   event: testEvent._id,
   user: testUser._id,
   purchaseDate: "2022-06-15",
+  date: new Date("2022-06-15"),
 };
 
 describe("Ticket model", () => {

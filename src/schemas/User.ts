@@ -10,6 +10,7 @@ export interface IUser {
   email: string;
   password: string;
   role: string;
+  status: string;
   validatePassword: (data: string) => Promise<boolean>;
 }
 // Clase para manejar la creación de usuarios con tsoa
@@ -35,6 +36,7 @@ const UserSchema = new Schema<IUser>({
   },
   password: { type: String, required: true },
   role: { type: String, required: true },
+  status: { type: String, default: "active" },
 });
 
 // Referenciado de https://stackoverflow.com/questions/14588032/mongoose-password-hashing

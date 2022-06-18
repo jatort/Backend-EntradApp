@@ -310,6 +310,54 @@
             }
           }
         }
+      },
+      "delete": {
+        "operationId": "DeleteUser",
+        "description": "Se cambia el estado del usuario cliente a inactivo solamente si no tiene tickets vigentes. Se borra la cuenta del usuario productor solamente si no tiene eventos vigentes.",
+        "responses": {
+          "202": {
+            "description": "- Usuario cliente inactivo\n - Usuario productor borrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Usuario eliminado"
+                    }
+                  },
+                  "required": ["message"],
+                  "type": "object",
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "- Usuario productor tiene eventos vigentes \n- Usuario cliente tiene tickets vigentes \n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Usuario tiene tickets vigentes"
+                    }
+                  },
+                  "required": ["message"],
+                  "type": "object",
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "tags": ["user"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/event/{id}": {
@@ -422,7 +470,48 @@
             }
           }
         },
-        "tags": ["user", "producer"],
+        "tags": ["producer"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/profile": {
+      "get": {
+        "operationId": "GetProfile",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User not found"
+                    }
+                  },
+                  "required": ["message"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []

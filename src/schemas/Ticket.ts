@@ -3,6 +3,7 @@ import { Date, Schema, Types, model } from "mongoose";
 export interface ITicket {
   user: Types.ObjectId;
   event: Types.ObjectId;
+  date: Date;
   purchaseDate: Date;
   code: string;
   price: number;
@@ -15,6 +16,7 @@ const TicketSchema = new Schema<ITicket>({
   purchaseDate: { type: Date, required: false, default: "" },
   price: { type: Number, required: true },
   order: { type: Schema.Types.ObjectId, ref: "Order", required: true },
+  date: { type: Date, required: true },
 });
 
 export const Ticket = model<ITicket>("Ticket", TicketSchema);

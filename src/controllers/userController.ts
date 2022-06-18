@@ -2,6 +2,8 @@ import { IUser, User, UserCreateRequest } from "../schemas/User";
 import { Event, IEvent, IPublishEvent } from "../schemas/Event";
 import mongoose from "mongoose";
 import { UserResponse } from "../types/userResponse";
+import { DeleteResponse } from "../types/deleteResponse";
+import { Ticket } from "../schemas/Ticket";
 
 export default class UserController {
   UserResponse = (
@@ -45,6 +47,18 @@ export default class UserController {
     }
   }
 
+  public async getProfile(email: string | undefined): Promise<UserResponse> {
+    /*
+    Retorna el usuario de email 'email'
+    */
+    const user = await User.findOne({ email: email });
+    if (user == null) {
+      throw new Error("No user found");
+    } else {
+      return this.UserResponse(user.username, user.email, user.role);
+    }
+  }
+
   async getMyEvents(user_email: string | undefined): Promise<IEvent[]> {
     /*
     Retorna los eventos creados por un usuario productor
@@ -70,6 +84,42 @@ export default class UserController {
       throw new Error("User not found");
     } else {
       return user;
+    }
+  }
+
+  async deleteUser(email: string | undefined): Promise<DeleteResponse | Error> {
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      throw new Error("User not found");
+    } else {
+      // Chequear tipo de usuario.
+      if (user.role === "prod") {
+        // Si es productor, revisar si tiene eventos vigentes. (borrar usuario)
+        const today = new Date();
+        const currentEvents = await Event.find({
+          user: user._id,
+          date: { $gte: today },
+        });
+        if (currentEvents.length > 0) {
+          throw new Error("User has active events");
+        }
+        await User.deleteOne({ id: user._id });
+        return { message: "User deleted" };
+      } else {
+        // Si es usuario, revisar si tiene tickets vigentes. (editar el status del usuario)
+        const today = new Date();
+        const currentTickets = await Ticket.find({
+          user: user._id,
+          date: { $gte: today },
+        });
+        if (currentTickets.length > 0) {
+          throw new Error("User has active tickets");
+        }
+        // cambiar estado del usuario
+        user.status = "deleted";
+        await user.save();
+        return { message: "User deleted" };
+      }
     }
   }
 }
