@@ -249,3 +249,31 @@ describe("Delete user test", () => {
     expect(userDeleted).toBeDefined();
   });
 });
+    
+describe("Event GET user/myProfile", () => {
+  it("Testing get prod user profile", async () => {
+    const resRegister = await request(app).post("/api/v1/user").send(prodData);
+    let resUser = await request(app).post("/api/v1/login").send(prodData);
+    let token = resUser.body["token"];
+    const res = await request(app)
+      .get("/api/v1/profile")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.statusCode).toBe(200);
+  });
+  it("Testing get client user profile", async () => {
+    const resRegister = await request(app).post("/api/v1/user").send(userData);
+    let resUser = await request(app).post("/api/v1/login").send(userData);
+    let token = resUser.body["token"];
+    const res = await request(app)
+      .get("/api/v1/profile")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.statusCode).toBe(200);
+  });
+  it("Testing get client user profile", async () => {
+    let token = "invalidToken";
+    const res = await request(app)
+      .get("/api/v1/profile")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.statusCode).toBe(400);
+  });
+});
