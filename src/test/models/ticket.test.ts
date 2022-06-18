@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { ITicket, Ticket } from "../../schemas/Ticket";
 import { IUser, User } from "../../schemas/User";
 import { IEvent, Event } from "../../schemas/Event";
+import { Order } from "../../schemas/Order";
 const db = require("../setup/db");
 
 beforeAll(async () => {
@@ -37,10 +38,23 @@ const eventData = {
 
 const testEvent = new Event(eventData);
 
+const orderData = {
+  user: testUser._id,
+  event: testEvent._id,
+  nTickets: 4,
+  amount: testEvent.price * 4,
+  currency: "CLP",
+  isPending: true,
+  commerceOrder:  Math.floor(Math.random() * (2000 - 1100 + 1)) + 1100,
+};
+
+const testOrder = new Order(orderData);
+
 const ticketData = {
   price: 100,
   event: testEvent._id,
   user: testUser._id,
+  order: testOrder._id,
   purchaseDate: "2022-06-15",
   date: new Date("2022-06-15"),
 };

@@ -14,7 +14,7 @@ const orderRouter = Router();
 
 orderRouter.post("/", auth, isClient, async (req: AuthRequest, res: Response) => {
   /*
-  Endpoint para comprar tickets el evento de id 'id'
+  Endpoint para comprar tickets el evento de id 'eventId'
   */
 
   const controller = new EventController();
@@ -53,13 +53,14 @@ orderRouter.post("/result", async (req: Request, res: Response) => {
     };
     let serviceName = "payment/getStatus";
     const flowApi = new FlowApi(config);
-    let response = await flowApi.send(serviceName, params, "GET");    //// Esta es la respuesta que retorna FLOW  2 Salió todo bien
+    let response = await flowApi.send(serviceName, params, "GET");
     const order = await Order.findOne({ commerceOrder: response.commerceOrder })
     if(!order){
       throw new Error(`Order not found`);
     }
 
     if (response.status == 2) {
+      const event = await Event.findById(order.event);
       for (let i = 0; i < order.nTickets; i++){
         let ticketData = {
           user: order.user,
@@ -67,6 +68,7 @@ orderRouter.post("/result", async (req: Request, res: Response) => {
           purchaseDate: new Date(),
           price: order.amount / order.nTickets,
           order: order._id,
+          date: event?.date,
         }
         const ticket = new Ticket(ticketData);
         await ticket.save();
@@ -79,13 +81,18 @@ orderRouter.post("/result", async (req: Request, res: Response) => {
       if(!event){
         throw new Error(`Event not found`);
       }
-      await event.updateOne({currentTickets: event.currentTickets - order.nTickets});
+      //await event.updateOne({currentTickets: event.currentTickets - order.nTickets});
 
       if (response.status == 1) {
+        // Transacción pendiente
         throw new Error("Pending transaction");
       } else if (response.status == 3) {
+        // Transacción rechazada
+        await event.updateOne({currentTickets: event.currentTickets - order.nTickets});
         throw new Error("Rejected");
       } else if (response.status == 4) {
+        // Transacción anulada
+        await event.updateOne({currentTickets: event.currentTickets - order.nTickets});
         throw new Error("Void transaction");
       }
     }
@@ -104,8 +111,45 @@ orderRouter.post(
       let serviceName = "payment/getStatus";
       const flowApi = new FlowApi(config);
       let response = await flowApi.send(serviceName, params, "GET");
-      //Actualiza los datos en su sistema
-      res.json(response);
+      
+      const order = await Order.findOne({ commerceOrder: response.commerceOrder })
+
+      if(!order){
+        throw new Error(`Order not found`);
+      }
+
+      if (response.status == 2) {
+        const event = await Event.findById(order.event);
+        for (let i = 0; i < order.nTickets; i++){
+          let ticketData = {
+            user: order.user,
+            event: order.event,
+            purchaseDate: new Date(),
+            price: order.amount / order.nTickets,
+            order: order._id,
+            date: event?.date,
+          }
+          const ticket = new Ticket(ticketData);
+          await ticket.save();
+          res.status(200).json({message: "Transaction successful"});
+        }
+        await order.updateOne({isPending: false});
+  
+      } else {
+        const event = await Event.findById(order.event);
+        if(!event){
+          throw new Error(`Event not found`);
+        }
+        await event.updateOne({currentTickets: event.currentTickets - order.nTickets});
+  
+        if (response.status == 1) {
+          throw new Error("Pending transaction");
+        } else if (response.status == 3) {
+          throw new Error("Rejected");
+        } else if (response.status == 4) {
+          throw new Error("Void transaction");
+        }
+      }
     } catch (error: any) {
       res.json({ error });
     }

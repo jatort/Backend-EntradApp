@@ -52,7 +52,8 @@ const orderData = {
   nTickets: 4,
   amount: validTicket.price * 4,
   currency: "CLP",
-  isPending: true
+  isPending: true,
+  commerceOrder:  Math.floor(Math.random() * (2000 - 1100 + 1)) + 1100,
 };
 
 describe("Order model", () => {

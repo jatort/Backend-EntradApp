@@ -11,7 +11,7 @@ export interface IOrder {
 }
 
 const OrderSchema = new Schema<IOrder>({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: false },
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   event: { type: Schema.Types.ObjectId, ref: "Event", required: true },
   nTickets: { type: Number, required: true },
   amount: { type: Number, required: true },
