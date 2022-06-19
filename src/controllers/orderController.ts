@@ -9,7 +9,11 @@ const FlowApi = require("flowcl-node-api-client");
 const config = require("../routes/config.ts");
 
 export default class OrderController {
-  async buyTickets(id: string, nTickets: number, userEmail: string | undefined): Promise<IOrder> {
+  async bookTickets(
+    id: string,
+    nTickets: number,
+    userEmail: string | undefined
+  ): Promise<IOrder> {
     /*
       Crea una orden
     */
@@ -27,8 +31,10 @@ export default class OrderController {
       throw new Error("No tickets available");
     }
 
-    if (event.nTickets - event.currentTickets < nTickets){
-      throw new Error(`Only ${event.nTickets - event.currentTickets} available`);
+    if (event.nTickets - event.currentTickets < nTickets) {
+      throw new Error(
+        `Only ${event.nTickets - event.currentTickets} available`
+      );
     }
 
     let orderData = {
@@ -45,7 +51,9 @@ export default class OrderController {
 
     try {
       await order.save();
-      await event.updateOne({currentTickets: event.currentTickets + nTickets});
+      await event.updateOne({
+        currentTickets: event.currentTickets + nTickets,
+      });
       return order;
     } catch (err: any) {
       if (err == mongoose.Error.ValidationError) {
@@ -71,7 +79,7 @@ export default class OrderController {
       email: email,
       paymentMethod: 9,
       urlConfirmation: config.baseURL + "/order/paymentConfirm",
-      urlReturn: config.baseURL + "/order/result"
+      urlReturn: config.baseURL + "/order/result",
     };
     const serviceName = "payment/create";
     // Instancia la clase FlowApi
@@ -142,8 +150,9 @@ export default class OrderController {
         const ticket = new Ticket(ticketData);
         await ticket.save();
       }
-      await Order.findOneAndUpdate({ _id: order._id}, {isPending: false });
-      let message = "Transacción exitosa, puedes ver tus entradas en Mis Tickets!";
+      await Order.findOneAndUpdate({ _id: order._id }, { isPending: false });
+      let message =
+        "Transacción exitosa, puedes ver tus entradas en Mis Tickets!";
       return message;
     } else {
       const event = await Event.findById(order.event);
@@ -152,19 +161,25 @@ export default class OrderController {
       }
       if (status == 1) {
         // Transacción pendiente
-        throw new Error("Transacción pendiente: Si la compra es existosa, tus entradas serán asignadas automáticamente");
+        throw new Error(
+          "Transacción pendiente: Si la compra es existosa, tus entradas serán asignadas automáticamente"
+        );
       } else if (status == 3) {
         // Transacción rechazada
-        await Event.findOneAndUpdate({_id: event._id}, {
-          currentTickets: event.currentTickets - order.nTickets,
-        });
+        await Event.findOneAndUpdate(
+          { _id: event._id },
+          {
+            currentTickets: event.currentTickets - order.nTickets,
+          }
+        );
         throw new Error("Transaccioń rechazada: Vuelva a intentarlo.");
       } else if (status == 4) {
         // Transacción anulada
         await Event.findOneAndUpdate(
-          {_id: event._id},  
-        {
-          currentTickets: event.currentTickets - order.nTickets}
+          { _id: event._id },
+          {
+            currentTickets: event.currentTickets - order.nTickets,
+          }
         );
         throw new Error("Transacción anulada: Vuelva a intentarlo.");
       }
