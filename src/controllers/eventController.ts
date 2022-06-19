@@ -47,11 +47,7 @@ export default class EventController {
     }
   }
 
-  async buyTickets(
-    id: string,
-    quantity: number,
-    userEmail: string | undefined
-  ): Promise<IOrder> {
+  async buyTickets(id: string, nTickets: number, userEmail: string | undefined): Promise<IOrder> {
     /*
       Crea una orden y redirige a Flow
     */
@@ -69,17 +65,15 @@ export default class EventController {
       throw new Error("No tickets available");
     }
 
-    if (event.nTickets - event.currentTickets < quantity) {
-      throw new Error(
-        `Only ${event.nTickets - event.currentTickets} available`
-      );
+    if (event.nTickets - event.currentTickets < nTickets){
+      throw new Error(`Only ${event.nTickets - event.currentTickets} available`);
     }
 
     let orderData = {
       user: user._id,
       event: event._id,
-      nTickets: quantity,
-      amount: quantity * event.price,
+      nTickets: nTickets,
+      amount: nTickets * event.price,
       currency: "CLP",
       isPending: true,
       commerceOrder: Math.floor(Math.random() * (2000 - 1100 + 1)) + 1100,
@@ -89,9 +83,7 @@ export default class EventController {
 
     try {
       await order.save();
-      await event.updateOne({
-        currentTickets: event.currentTickets + quantity,
-      });
+      await event.updateOne({currentTickets: event.currentTickets + nTickets});
       return order;
     } catch (err: any) {
       if (err == mongoose.Error.ValidationError) {

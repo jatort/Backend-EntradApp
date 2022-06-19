@@ -601,7 +601,7 @@
                   "eventId": {
                     "type": "string"
                   },
-                  "quantity": {
+                  "nTickets": {
                     "type": "number"
                   }
                 }
