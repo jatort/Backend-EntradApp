@@ -70,8 +70,8 @@ export default class OrderController {
       amount: order.amount,
       email: email,
       paymentMethod: 9,
-      urlConfirmation: config.baseURL + "order/paymentConfirm",
-      urlReturn: config.baseURL + "order/result"
+      urlConfirmation: config.baseURL + "/order/paymentConfirm",
+      urlReturn: config.baseURL + "/order/result"
     };
     const serviceName = "payment/create";
     // Instancia la clase FlowApi
