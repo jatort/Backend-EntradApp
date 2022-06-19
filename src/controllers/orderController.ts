@@ -132,7 +132,7 @@ export default class OrderController {
       Obtiene las ordenes de un usuario
     */
     try {
-      const orders = await Order.find({user: userId});
+      const orders = await Order.find({user: userId}).populate("event");
       return orders;
     } catch (err: any) {
       throw new Error(`Error: ${err.message}`)
