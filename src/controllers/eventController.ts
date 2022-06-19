@@ -18,7 +18,7 @@ export default class EventController {
       if (err == mongoose.Error.ValidationError) {
         throw new Error("Invalid event data");
       } else {
-        throw new Error("Unknown Event Error");
+        throw new Error("Error: " + err.message);
       }
     }
   }
@@ -40,33 +40,39 @@ export default class EventController {
     Retorna el evento de id: 'id'
     */
     const event = await Event.findById(id);
-    if (event == null){
+    if (event == null) {
       throw new Error("No events found");
     } else {
       return event;
     }
   }
 
-  async buyTickets(id: string, quantity: number, userEmail: string | undefined): Promise<IOrder> {
+  async buyTickets(
+    id: string,
+    quantity: number,
+    userEmail: string | undefined
+  ): Promise<IOrder> {
     /*
       Crea una orden y redirige a Flow
     */
     const user = await User.findOne({ email: userEmail });
-    if (!user){
+    if (!user) {
       throw new Error("No user found");
     }
 
     const event = await Event.findById(id);
-    if (!event){
+    if (!event) {
       throw new Error("No event found");
     }
 
-    if (event.nTickets <= 0){
+    if (event.nTickets <= 0) {
       throw new Error("No tickets available");
     }
 
-    if (event.nTickets - event.currentTickets < quantity){
-      throw new Error(`Only ${event.nTickets - event.currentTickets} available`);
+    if (event.nTickets - event.currentTickets < quantity) {
+      throw new Error(
+        `Only ${event.nTickets - event.currentTickets} available`
+      );
     }
 
     let orderData = {
@@ -77,13 +83,15 @@ export default class EventController {
       currency: "CLP",
       isPending: true,
       commerceOrder: Math.floor(Math.random() * (2000 - 1100 + 1)) + 1100,
-    }
+    };
 
     const order = new Order(orderData);
 
     try {
       await order.save();
-      await event.updateOne({currentTickets: event.currentTickets + quantity});
+      await event.updateOne({
+        currentTickets: event.currentTickets + quantity,
+      });
       return order;
     } catch (err: any) {
       if (err == mongoose.Error.ValidationError) {

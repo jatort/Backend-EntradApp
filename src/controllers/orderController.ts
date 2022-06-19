@@ -9,26 +9,32 @@ const FlowApi = require("flowcl-node-api-client");
 const config = require("../routes/config.ts");
 
 export default class OrderController {
-  async buyTickets(id: string, quantity: number, userEmail: string | undefined): Promise<IOrder> {
+  async buyTickets(
+    id: string,
+    quantity: number,
+    userEmail: string | undefined
+  ): Promise<IOrder> {
     /*
       Crea una orden
     */
     const user = await User.findOne({ email: userEmail });
-    if (!user){
+    if (!user) {
       throw new Error("No user found");
     }
 
     const event = await Event.findById(id);
-    if (!event){
+    if (!event) {
       throw new Error("No event found");
     }
 
-    if (event.nTickets <= 0){
+    if (event.nTickets <= 0) {
       throw new Error("No tickets available");
     }
 
-    if (event.nTickets - event.currentTickets < quantity){
-      throw new Error(`Only ${event.nTickets - event.currentTickets} available`);
+    if (event.nTickets - event.currentTickets < quantity) {
+      throw new Error(
+        `Only ${event.nTickets - event.currentTickets} available`
+      );
     }
 
     let orderData = {
@@ -39,13 +45,15 @@ export default class OrderController {
       currency: "CLP",
       isPending: true,
       commerceOrder: Math.floor(Math.random() * (2000 - 1100 + 1)) + 1100,
-    }
+    };
 
     const order = new Order(orderData);
 
     try {
       await order.save();
-      await event.updateOne({currentTickets: event.currentTickets + quantity});
+      await event.updateOne({
+        currentTickets: event.currentTickets + quantity,
+      });
       return order;
     } catch (err: any) {
       if (err == mongoose.Error.ValidationError) {
@@ -56,10 +64,14 @@ export default class OrderController {
     }
   }
 
-  async createFlowOrder(order: IOrder, email: string | undefined): Promise<string> {
+  async createFlowOrder(
+    order: IOrder,
+    email: string | undefined
+  ): Promise<string> {
     /*
       Crea una orden en Flow y redirige a la ventana de pago
     */
+    console.log("debug 0: ", config);
     const params = {
       commerceOrder: order.commerceOrder,
       subject: "Pago EntradApp",
@@ -68,9 +80,8 @@ export default class OrderController {
       email: email,
       paymentMethod: 9,
       urlConfirmation: config.baseURL + "/paymentConfirm",
-      urlReturn: config.baseURL + "/result"
+      urlReturn: config.baseURL + "/result",
     };
-
     const serviceName = "payment/create";
     // Instancia la clase FlowApi
     const flowApi = new FlowApi(config);
@@ -81,7 +92,8 @@ export default class OrderController {
       const redirect = response.url + "?token=" + response.token;
       return redirect;
     } catch (err: any) {
-      throw new Error("Connect with FLOW refused");
+      console.log();
+      throw new Error("Error: " + err.message);
     }
   }
 
@@ -94,7 +106,7 @@ export default class OrderController {
     };
     let serviceName = "payment/getStatus";
     const flowApi = new FlowApi(config);
-    try{
+    try {
       let response = await flowApi.send(serviceName, params, "GET");
       return response;
     } catch (err: any) {
@@ -102,18 +114,23 @@ export default class OrderController {
     }
   }
 
-  async getOrder(commerceOrder: string): Promise<IOrder & {_id: Types.ObjectId}> {
+  async getOrder(
+    commerceOrder: string
+  ): Promise<IOrder & { _id: Types.ObjectId }> {
     /*
       Obtiene la orden desde la BDD
     */
-    const order = await Order.findOne({ commerceOrder: commerceOrder })
-    if(!order){
+    const order = await Order.findOne({ commerceOrder: commerceOrder });
+    if (!order) {
       throw new Error(`Order not found`);
     }
     return order;
   }
 
-  async createTickets(order: IOrder & {_id: Types.ObjectId}, status: any): Promise<string | undefined> {
+  async createTickets(
+    order: IOrder & { _id: Types.ObjectId },
+    status: any
+  ): Promise<string | undefined> {
     /*
       En el caso que la orden de Flow tenga status 2 (aprobada), crea los tickets
       correspondientes a la orden, en caso de que la orden fuera rechazada (status 3 o 4),
@@ -122,7 +139,7 @@ export default class OrderController {
     */
     if (status == 2) {
       const event = await Event.findById(order.event);
-      for (let i = 0; i < order.nTickets; i++){
+      for (let i = 0; i < order.nTickets; i++) {
         let ticketData = {
           user: order.user,
           event: order.event,
@@ -130,16 +147,16 @@ export default class OrderController {
           price: order.amount / order.nTickets,
           order: order._id,
           date: event?.date,
-        }
+        };
         const ticket = new Ticket(ticketData);
         await ticket.save();
       }
-      await Order.updateOne({_id: order._id, isPending: false});
-      let message = "Transaction successful"
+      await Order.updateOne({ _id: order._id, isPending: false });
+      let message = "Transaction successful";
       return message;
-    }else{
+    } else {
       const event = await Event.findById(order.event);
-      if(!event){
+      if (!event) {
         throw new Error(`Event not found`);
       }
       if (status == 1) {
@@ -147,11 +164,15 @@ export default class OrderController {
         throw new Error("Pending transaction");
       } else if (status == 3) {
         // Transacción rechazada
-        await event.updateOne({currentTickets: event.currentTickets - order.nTickets});
+        await event.updateOne({
+          currentTickets: event.currentTickets - order.nTickets,
+        });
         throw new Error("Rejected");
       } else if (status == 4) {
         // Transacción anulada
-        await event.updateOne({currentTickets: event.currentTickets - order.nTickets});
+        await event.updateOne({
+          currentTickets: event.currentTickets - order.nTickets,
+        });
         throw new Error("Void transaction");
       }
     }
