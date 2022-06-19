@@ -56,21 +56,21 @@ const invalidUserNoCreated = {
 const eventData = {
   name: "Lollapalooza",
   category: "Music",
-  date: new Date("2022-06-20"),
-  dateLimitBuy: new Date("2022-06-10"),
+  date: new Date("2023-06-20"),
+  dateLimitBuy: new Date("2023-06-10"),
   description:
     "Lollapalooza es un festival musical de los Estados Unidos que originalmente ofrecía bandas de rock alternativo, indie y punk rock; también hay actuaciones cómicas y de danza.",
   nTickets: 10,
   imageUrl:
     "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
-  price: 100,
+  price: 35600,
   address: "Puchuncaví 3244",
   city: "Santiago",
 };
 
 const ticketData = {
   price: 100,
-  purchaseDate: "2022-06-15",
+  purchaseDate: "2023-06-15",
 };
 
 const orderData = {
@@ -253,8 +253,8 @@ describe("Delete user test", () => {
       .send({
         ...eventData,
         user: prod._id,
-        date: new Date("2022-06-20"),
-        dateLimitBuy: new Date("2022-06-15"),
+        date: new Date("2023-06-20"),
+        dateLimitBuy: new Date("2023-06-15"),
       });
     const res = await request(app)
       .delete("/api/v1/user")
