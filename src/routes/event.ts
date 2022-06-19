@@ -6,7 +6,7 @@ import { auth, isProd } from "../middlewares/auth";
 import { User } from "../schemas/User";
 
 const FlowApi = require("flowcl-node-api-client");
-const config = require("./config.json");
+const config = require("./config.ts");
 
 const eventRouter = Router();
 
@@ -65,7 +65,8 @@ eventRouter.post(
       email: "jnandrade@uc.cl",
       paymentMethod: 9,
       urlConfirmation: config.baseURL + "/payment_confirm",
-      urlReturn: config.baseURL + "/result",
+      // urlReturn: config.baseURL + "/result",
+      urlReturn: "http://192.168.100.9:3000/api/v1/order/result",
       ...optional,
     };
     //Define el metodo a usar

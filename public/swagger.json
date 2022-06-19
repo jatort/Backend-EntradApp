@@ -117,6 +117,44 @@
         "type": "object",
         "additionalProperties": false
       },
+      "IOrder": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/Types.ObjectId"
+          },
+          "event": {
+            "$ref": "#/components/schemas/Types.ObjectId"
+          },
+          "nTickets": {
+            "type": "number",
+            "format": "double"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "commerceOrder": {
+            "type": "string"
+          },
+          "isPending": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user",
+          "event",
+          "nTickets",
+          "amount",
+          "currency",
+          "commerceOrder",
+          "isPending"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "LoginResponse": {
         "properties": {
           "token": {
@@ -517,6 +555,183 @@
             "bearerAuth": []
           }
         ]
+      }
+    },
+    "/order/": {
+      "post": {
+        "operationId": "PostOrder",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IOrder"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No user found\nNo event found\nNo tickets available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No tickets available"
+                    }
+                  },
+                  "required": ["message"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "tags": ["order"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "eventId": {
+                    "type": "string"
+                  },
+                  "nTickets": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/order/result/": {
+      "post": {
+        "operationId": "PostOrderResult",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Transaction successful"
+                    }
+                  },
+                  "required": ["message"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Order not found \nEvent not found \nPending transaction\nRejected\nVoid transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Order not found"
+                    }
+                  },
+                  "required": ["message"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "tags": ["order"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/order/paymentConfirm/": {
+      "post": {
+        "operationId": "PostOrderPaymentConfirm",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Transaction successful"
+                    }
+                  },
+                  "required": ["message"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Order not found \nEvent not found \nPending transaction\nRejected\nVoid transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Order not found"
+                    }
+                  },
+                  "required": ["message"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "tags": ["order"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },

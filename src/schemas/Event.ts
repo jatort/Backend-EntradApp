@@ -12,6 +12,7 @@ export interface IEvent {
   price: number;
   address: string;
   city: string;
+  currentTickets: number;
 }
 
 const EventSchema = new Schema<IEvent>({
@@ -23,9 +24,10 @@ const EventSchema = new Schema<IEvent>({
   nTickets: { type: Number, required: true },
   imageUrl: { type: String, required: false },
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  price: { type: Number, required: true },
+  price: { type: Number, required: true, min: 350 },
   address: { type: String, required: true },
-  city: { type: String, required: true }
+  city: { type: String, required: true },
+  currentTickets: { type: Number, default: 0 },
 });
 
 EventSchema.pre("save", async function save(next) {
@@ -48,4 +50,5 @@ export interface IPublishEvent {
   price: number;
   address: string;
   city: string;
+  currentTickets: number;
 }
