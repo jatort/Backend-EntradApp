@@ -128,6 +128,9 @@ export default class OrderController {
   async getOrders(
     userId: Types.ObjectId
   ): Promise<IOrder[]> {
+    /*
+      Obtiene las ordenes de un usuario
+    */
     try {
       const orders = await Order.find({user: userId});
       return orders;
