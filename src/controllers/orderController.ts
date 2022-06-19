@@ -4,9 +4,9 @@ import { Ticket } from "../schemas/Ticket";
 import { IOrder, Order } from "../schemas/Order";
 import { Types } from "mongoose";
 import mongoose from "mongoose";
+import config from "../routes/config";
 
 const FlowApi = require("flowcl-node-api-client");
-const config = require("../routes/config.ts");
 
 export default class OrderController {
   async bookTickets(
