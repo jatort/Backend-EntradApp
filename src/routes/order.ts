@@ -26,11 +26,16 @@ orderRouter.post("/result", async (req: Request, res: Response) => {
     const controller = new OrderController();
     // Se obtiene el estado de la orden de Flow.
     const response = await controller.receiveFlowOrder(req.body.token);
-    // Se obtiene la orden a partir del estado de la orden de Flow
-    const order = await controller.getOrder(response.commerceOrder);
-    // Se generan los tickets correspondientes a la compra.
-    const message = await controller.createTickets(order, response.status);
-    res.status(200).json({message: message});
+    if (response.status == 2){
+      const order = await controller.getOrder(response.commerceOrder);
+      res.status(200).json(order);
+    } else if (response.status == 1){
+      res.status(200).json({message: "Transacción pendiente: Si la compra es existosa, tus entradas serán asignadas automáticamente"});
+    } else if (response.status == 3){
+      res.status(400).json({message: "Rejected"});
+    } else if (response.status == 4){
+      res.status(400).json({message: "Void transaction"});
+    }  
   } catch (error: any) {
     res.json({ error });
   }
