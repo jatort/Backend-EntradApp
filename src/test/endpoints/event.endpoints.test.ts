@@ -20,24 +20,40 @@ const userDataProd = {
   password: "TekLoon123",
 };
 
+const client = new User(userDataClient);
+const prod = new User(userDataProd);
+
 // Evento generico con usuario cliente para testear los endpoints
 const eventData = {
   name: "Lollapalooza",
   category: "Music",
-  date: new Date("2022-06-15"),
-  dateLimitBuy: new Date("2022-06-09"),
+  date: new Date("2023-08-15"),
+  dateLimitBuy: new Date("2023-08-09"),
   description:
     "Lollapalooza es un festival musical de los Estados Unidos que originalmente ofrecía bandas de rock alternativo, indie y punk rock; también hay actuaciones cómicas y de danza.",
   nTickets: 1000,
   imageUrl:
     "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
-  price: 100,
+  price: 3500,
   address: "Puchuncaví 3244",
-  city: "Santiago"
-
+  city: "Santiago",
 };
 
-const getToken = async (userData: Object) => {
+const invalidEventData = {
+  name: "Lollapalooza",
+  category: "Music",
+  date: new Date("2022-08-15"),
+  dateLimitBuy: new Date("2022-08-09"),
+  description:
+    "Lollapalooza es un festival musical de los Estados Unidos que originalmente ofrecía bandas de rock alternativo, indie y punk rock; también hay actuaciones cómicas y de danza.",
+  nTickets: 1000,
+  imageUrl:
+    "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.adnradio.cl%2Fconciertos%2F2021%2F11%2F17%2Flollapalooza-chile-2022-que-lugares-podrian-sustituir-a-parque-ohiggins.html&psig=AOvVaw39bRWA_GrXo6ZWiJ9AOqnM&ust=1652595291018000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCMi5pq2r3vcCFQAAAAAdAAAAABAD",
+  price: 3500,
+  city: "Santiago",
+};
+
+export const getToken = async (userData: Object) => {
   await request(app).post("/api/v1/user").send(userData);
   let resUser = await request(app).post("/api/v1/login").send(userData);
   let token = resUser.body["token"];
@@ -51,6 +67,7 @@ beforeAll(async () => {
 
 afterEach(async () => {
   await Event.deleteMany({});
+  await User.deleteMany({});
 });
 
 afterAll(async () => {
@@ -61,7 +78,7 @@ afterAll(async () => {
 
 describe("Event POST endpoints", () => {
   it("Testing event post endpoint with client user", async () => {
-    let token = await getToken(userDataClient);
+    let token = await getToken({ ...userDataClient, user: client._id });
     const res = await request(app)
       .post("/api/v1/event")
       .set("Authorization", `Bearer ${token}`)
@@ -69,22 +86,30 @@ describe("Event POST endpoints", () => {
     expect(res.statusCode).toEqual(401);
   });
   it("Testing event post without token with prod user", async () => {
-    let token = await getToken(userDataProd);
+    let token = await getToken({ ...userDataProd, user: prod._id });
     const res = await request(app)
       .post("/api/v1/event")
       .set("Authorization", `Bearer ${token}`)
       .send(eventData);
     expect(res.statusCode).toEqual(201);
   });
+  it("Testing event post with invalid data", async () => {
+    let token = await getToken(userDataProd);
+    const res = await request(app)
+      .post("/api/v1/event")
+      .set("Authorization", `Bearer ${token}`)
+      .send(invalidEventData);
+    expect(res.statusCode).toEqual(400);
+  });
 });
 
 describe("Event GET endpoints", () => {
   it("Testing event get endpoint with future date", async () => {
     let token = await getToken(userDataProd);
-    await request(app)
+    const res2 = await request(app)
       .post("/api/v1/event")
       .set("Authorization", `Bearer ${token}`)
-      .send(eventData);
+      .send({ ...eventData, user: prod._id });
     const res = await request(app).get("/api/v1/event");
     expect(res.body.events.length).toBe(1);
   });
@@ -96,28 +121,6 @@ describe("Event GET endpoints", () => {
       .send({ ...eventData, date: new Date("2020-05-24") });
     const res = await request(app).get("/api/v1/event");
     expect(res.body.events).toBe(undefined);
-  });
-});
-
-describe("Event GET myevents", () => {
-  it("Testing event get myevents endpoint with event created", async () => {
-    let token = await getToken(userDataProd);
-    await request(app)
-      .post("/api/v1/event")
-      .set("Authorization", `Bearer ${token}`)
-      .send(eventData);
-    const res = await request(app)
-      .get("/api/v1/user/myevents")
-      .set("Authorization", `Bearer ${token}`);
-    expect(res.body.events.length).toBe(1);
-  });
-  it("Testing event get myevents endpoint with no event created", async () => {
-    let token = await getToken(userDataProd);
-    const res = await request(app)
-      .get("/api/v1/user/myevents")
-      .set("Authorization", `Bearer ${token}`);
-    expect(res.statusCode).toBe(400);
-    expect(res.body.message).toBe("No events found");
   });
 });
 
@@ -155,11 +158,9 @@ describe("Event GET id endpoint", () => {
       .set("Authorization", `Bearer ${tokenProd}`)
       .send(eventData);
     let id = resEvent.body["event"]["_id"];
-    const res = await request(app)
-      .get(`/api/v1/event/${id}`);
+    const res = await request(app).get(`/api/v1/event/${id}`);
     expect(res.body["event"]["_id"]).toBe(id);
   });
-
 
   it("Testing event get invalid id", async () => {
     let id = "1234567890sasad";

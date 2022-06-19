@@ -7,7 +7,9 @@
     "dev": "ts-node-dev --poll src/index.ts",
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
-    "test": "jest --runInBand ./src/test"
+    "test": "jest --runInBand ./src/test",
+    "test-coverage": "jest --coverage",
+    "test-coverage-report": "jest --coverageReporters='text-summary'"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,7 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.0",
     "express": "^4.18.1",
+    "flowcl-node-api-client": "^1.1.5",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.3.2",
     "morgan": "^1.10.0",
