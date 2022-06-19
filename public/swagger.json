@@ -675,7 +675,7 @@
         }
       }
     },
-    "/order/payment_confirm/": {
+    "/order/paymentConfirm/": {
       "post": {
         "operationId": "PostOrderPaymentConfirm",
         "responses": {

@@ -42,7 +42,7 @@ orderRouter.post("/result", async (req: Request, res: Response) => {
 });
 
 orderRouter.post(
-  "/payment_confirm",
+  "/paymentConfirm",
   async (req: Request, res: Response) => {
     try {
       const controller = new OrderController();

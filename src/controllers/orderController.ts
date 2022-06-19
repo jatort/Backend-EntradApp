@@ -67,7 +67,7 @@ export default class OrderController {
       amount: order.amount,
       email: email,
       paymentMethod: 9,
-      urlConfirmation: config.baseURL + "/payment_confirm",
+      urlConfirmation: config.baseURL + "/paymentConfirm",
       urlReturn: config.baseURL + "/result"
     };
 
