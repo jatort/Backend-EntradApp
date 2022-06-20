@@ -12,7 +12,7 @@ export default class TicketController {
       Obtiene los tickets de un usuario
     */
     try {
-      const tickets = await Ticket.find({user: userId});
+      const tickets = await Ticket.find({user: userId}).populate("event");
       return tickets;
     } catch (err: any) {
       throw new Error(`Error: ${err.message}`)
