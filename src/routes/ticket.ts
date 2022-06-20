@@ -10,7 +10,6 @@ ticketRouter.get("/", auth, isClient, async (req: AuthRequest, res: Response) =>
   /*
     Endpoint para obtener los tickets de un usuario
   */
-
     const ticketController = new TicketController();
     const userController = new UserController();
     try {
