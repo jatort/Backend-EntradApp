@@ -5,7 +5,6 @@ export interface ITicket {
   event: Types.ObjectId;
   date: Date;
   purchaseDate: Date;
-  code: string;
   price: number;
   order: Types.ObjectId;
 }
