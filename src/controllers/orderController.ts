@@ -125,6 +125,20 @@ export default class OrderController {
     return order;
   }
 
+  async getOrders(
+    userId: Types.ObjectId
+  ): Promise<IOrder[]> {
+    /*
+      Obtiene las ordenes de un usuario
+    */
+    try {
+      const orders = await Order.find({user: userId}).populate("event");
+      return orders;
+    } catch (err: any) {
+      throw new Error(`Error: ${err.message}`)
+    }
+  }
+
   async createTickets(
     order: IOrder & { _id: Types.ObjectId },
     status: any

@@ -87,6 +87,18 @@ export default class UserController {
     }
   }
 
+  async getClient(email: any): Promise<(IUser & {_id: mongoose.Types.ObjectId;})> {
+    /*
+    Retorna el usuario cliente de email: 'email'
+    */
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      throw new Error("User not found");
+    } else {
+      return user;
+    }
+  }
+
   async deleteUser(email: string | undefined): Promise<DeleteResponse | Error> {
     const user = await User.findOne({ email: email });
     if (!user) {

@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { AuthRequest } from "../types/authRequest";
 import OrderController from "../controllers/orderController";
 import { auth, isClient } from "../middlewares/auth";
+import UserController from "../controllers/userController";
 
 const orderRouter = Router();
 
@@ -28,6 +29,22 @@ orderRouter.post(
     }
   }
 );
+
+orderRouter.get("/", auth, isClient, async (req: AuthRequest, res: Response) => {
+  /*
+    Endpoint para obtener el historial de compra de un usuario
+  */
+
+    const orderController = new OrderController();
+    const userController = new UserController();
+    try {
+      const user = await userController.getClient(req.user!.email);
+      const orders = await orderController.getOrders(user._id);
+      return res.status(200).json({orders});
+    } catch (err: any) {
+      return res.status(400).json({message: err.message});
+    }
+});
 
 orderRouter.post("/result", async (req: Request, res: Response) => {
   try {
