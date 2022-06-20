@@ -125,6 +125,41 @@
           "event": {
             "$ref": "#/components/schemas/Types.ObjectId"
           },
+          "order": {
+            "$ref": "#/components/schemas/Types.ObjectId"
+          },
+          "purchaseDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "user",
+          "event",
+          "order",
+          "purchaseDate",
+          "price",
+          "date"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ITicket": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/Types.ObjectId"
+          },
+          "event": {
+            "$ref": "#/components/schemas/Types.ObjectId"
+          },
           "nTickets": {
             "type": "number",
             "format": "double"
@@ -614,6 +649,27 @@
             "bearerAuth": []
           }
         ]
+      },
+      "get": {
+        "operationId": "GetOrders",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/IOrder"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["order"],
+        "security": [],
+        "parameters": []
       }
     },
     "/order/result/": {
@@ -732,6 +788,29 @@
             }
           }
         }
+      }
+    },
+    "/ticket/": {
+      "get": {
+        "operationId": "GetTickets",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ITicket"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["ticket"],
+        "security": [],
+        "parameters": []
       }
     }
   },
