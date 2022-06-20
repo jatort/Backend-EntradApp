@@ -141,14 +141,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "user",
-          "event",
-          "order",
-          "purchaseDate",
-          "price",
-          "date"
-        ],
+        "required": ["user", "event", "order", "purchaseDate", "price", "date"],
         "type": "object",
         "additionalProperties": false
       },
@@ -809,7 +802,11 @@
           }
         },
         "tags": ["ticket"],
-        "security": [],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": []
       }
     }
