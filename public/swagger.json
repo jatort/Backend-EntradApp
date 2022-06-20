@@ -117,7 +117,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "IOrder": {
+      "ITicket": {
         "properties": {
           "user": {
             "$ref": "#/components/schemas/Types.ObjectId"
@@ -152,7 +152,7 @@
         "type": "object",
         "additionalProperties": false
       },
-      "ITicket": {
+      "IOrder": {
         "properties": {
           "user": {
             "$ref": "#/components/schemas/Types.ObjectId"
