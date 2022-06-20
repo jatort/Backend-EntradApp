@@ -16,7 +16,7 @@ ticketRouter.get("/", auth, isClient, async (req: AuthRequest, res: Response) =>
     try {
       const user = await userController.getClient(req.user!.email);
       const tickets = await ticketController.getTickets(user._id);
-      return res.status(200).json({orders});
+      return res.status(200).json({tickets});
     } catch (err: any) {
       return res.status(400).json({message: err.message});
     }
