@@ -661,7 +661,11 @@
           }
         },
         "tags": ["order"],
-        "security": [],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": []
       }
     },
