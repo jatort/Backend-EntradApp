@@ -7,6 +7,8 @@ const userData = {
   email: "tekloon@gmail.com",
   role: "common",
   password: "TekLoon123",
+  apiKey: "someApiKey",
+  secretKey: "someSecretKey",
 };
 
 beforeAll(async () => {
@@ -23,7 +25,7 @@ afterAll(async () => {
 describe("User model", () => {
   afterEach(async () => {
     await db.dropCollections();
-  });  
+  });
 
   it("create & save user successfully", async () => {
     const validUser = new User(userData);
@@ -32,6 +34,9 @@ describe("User model", () => {
     expect(savedUser._id).toBeDefined();
     expect(savedUser.email).toBe(userData.email);
     expect(await savedUser.validatePassword(userData.password)).toBe(true);
+    expect(await savedUser.validateApiKey(userData.apiKey)).toBe(true);
+    expect(await savedUser.validateSecretKey(userData.secretKey)).toBe(true);
+    expect(await savedUser.status).toBe("active");
     expect(savedUser.role).toBe(userData.role);
   });
 
