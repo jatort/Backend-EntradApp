@@ -8,6 +8,7 @@ export interface IOrder {
   currency: string;
   commerceOrder: string;
   isPending: boolean;
+  flowToken: string;
 }
 
 const OrderSchema = new Schema<IOrder>({
@@ -15,9 +16,10 @@ const OrderSchema = new Schema<IOrder>({
   event: { type: Schema.Types.ObjectId, ref: "Event", required: true },
   nTickets: { type: Number, required: true },
   amount: { type: Number, required: true },
-  currency: { type: String, required: true},
-  commerceOrder: {type: String, required: true},
-  isPending: { type: Schema.Types.Boolean, required: true}
+  currency: { type: String, required: true },
+  commerceOrder: { type: String, required: true },
+  isPending: { type: Schema.Types.Boolean, required: true },
+  flowToken: { type: String, default: "" },
 });
 
 export const Order = model<IOrder>("Order", OrderSchema);
