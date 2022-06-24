@@ -7,6 +7,8 @@ const userData = {
   email: "tekloon@gmail.com",
   role: "common",
   password: "TekLoon123",
+  apiKey: "someApiKey",
+  secretKey: "someSecretKey",
 };
 
 beforeAll(async () => {
@@ -23,7 +25,7 @@ afterAll(async () => {
 describe("User model", () => {
   afterEach(async () => {
     await db.dropCollections();
-  });  
+  });
 
   it("create & save user successfully", async () => {
     const validUser = new User(userData);
@@ -32,16 +34,22 @@ describe("User model", () => {
     expect(savedUser._id).toBeDefined();
     expect(savedUser.email).toBe(userData.email);
     expect(await savedUser.validatePassword(userData.password)).toBe(true);
+    expect(savedUser.decodeApiKey()).toBe(userData.apiKey);
+    expect(savedUser.decodeSecretKey()).toBe(userData.secretKey);
+    expect(await savedUser.status).toBe("active");
     expect(savedUser.role).toBe(userData.role);
   });
 
   it("create user with invalid email", async () => {
-    const invalidUser = new User({ ...userData, email: "invalidEmail" });
+    const invalidMail = "invalidMail";
+    const invalidUser = new User({ ...userData, email: invalidMail });
     // const validationResult: any = await invalidUser.validateSync();
     try {
       const invalidSave = await invalidUser.save();
     } catch (err: any) {
-      expect(err.errors.email.message).toBe("invalid email");
+      expect(err.errors.email.message).toBe(
+        `${invalidMail} is not a valid email`
+      );
     }
   });
 

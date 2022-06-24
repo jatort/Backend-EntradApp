@@ -1,5 +1,5 @@
 import { Event } from "../schemas/Event";
-import { User } from "../schemas/User";
+import { IUser, User } from "../schemas/User";
 import { Ticket } from "../schemas/Ticket";
 import { IOrder, Order } from "../schemas/Order";
 import { Types } from "mongoose";
@@ -66,7 +66,8 @@ export default class OrderController {
 
   async createFlowOrder(
     order: IOrder,
-    email: string | undefined
+    prod: IUser & { _id: mongoose.Types.ObjectId },
+    clientEmail: string | undefined
   ): Promise<string> {
     /*
       Crea una orden en Flow y redirige a la ventana de pago
@@ -76,14 +77,18 @@ export default class OrderController {
       subject: "Pago EntradApp",
       currency: order.currency,
       amount: order.amount,
-      email: email,
+      email: clientEmail,
       paymentMethod: 9,
       urlConfirmation: config.baseURL + "/order/paymentConfirm",
       urlReturn: config.baseURL + "/order/result",
     };
     const serviceName = "payment/create";
     // Instancia la clase FlowApi
-    const flowApi = new FlowApi(config);
+    const flowApi = new FlowApi({
+      ...config,
+      apiKey: prod.decodeApiKey(),
+      secretKey: prod.decodeSecretKey(),
+    });
     try {
       // Ejecuta el servicio
       let response = await flowApi.send(serviceName, params, "POST");
@@ -91,7 +96,7 @@ export default class OrderController {
       const redirect = response.url + "?token=" + response.token;
       return redirect;
     } catch (err: any) {
-      throw new Error("Error: " + err.message);
+      throw new Error(err.message);
     }
   }
 
@@ -125,17 +130,15 @@ export default class OrderController {
     return order;
   }
 
-  async getOrders(
-    userId: Types.ObjectId
-  ): Promise<IOrder[]> {
+  async getOrders(userId: Types.ObjectId): Promise<IOrder[]> {
     /*
       Obtiene las ordenes de un usuario
     */
     try {
-      const orders = await Order.find({user: userId}).populate("event");
+      const orders = await Order.find({ user: userId }).populate("event");
       return orders;
     } catch (err: any) {
-      throw new Error(`Error: ${err.message}`)
+      throw new Error(`Error: ${err.message}`);
     }
   }
 

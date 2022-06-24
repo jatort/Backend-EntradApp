@@ -22,6 +22,17 @@ export default class EventController {
       }
     }
   }
+
+  async getById(id: string): Promise<IEvent> {
+    /*
+    Retorna el evento de id: 'id'
+    */
+    const event = await Event.findById(id);
+    if (event == null) {
+      throw new Error("No event found");
+    }
+    return event;
+  }
   async getEvents(): Promise<IEvent[]> {
     /*
     Retorna todos los eventos.
