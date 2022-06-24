@@ -4,8 +4,6 @@ import OrderController from "../controllers/orderController";
 import { auth, isClient } from "../middlewares/auth";
 import UserController from "../controllers/userController";
 import EventController from "../controllers/eventController";
-import { Event } from "../schemas/Event";
-import { User } from "../schemas/User";
 
 const orderRouter = Router();
 
