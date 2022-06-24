@@ -96,7 +96,7 @@ export default class OrderController {
       const redirect = response.url + "?token=" + response.token;
       return redirect;
     } catch (err: any) {
-      throw new Error(err);
+      throw new Error(err.message);
     }
   }
 
