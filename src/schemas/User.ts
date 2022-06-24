@@ -1,9 +1,20 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 import bcrypt from "bcryptjs";
-const { isEmail } = require("validator");
+import CryptoJS, { AES } from "crypto-js";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const SALT_WORK_FACTOR = 10;
+const AESkey = process.env.AES_KEY;
+const regex =
+  "[a-zA-Z0-9]{0,}([.]?[a-zA-Z0-9]{1,})[@](gmail.com|hotmail.com|yahoo.com)";
+const patt = new RegExp(regex);
+
+if (AESkey == undefined) {
+  throw new Error("AES key not defined");
+}
 
 export interface IUser {
   username: string;
@@ -13,8 +24,8 @@ export interface IUser {
   status: string;
   apiKey: string;
   secretKey: string;
-  validateApiKey: (data: string) => Promise<boolean>;
-  validateSecretKey: (data: string) => Promise<boolean>;
+  decodeApiKey: () => string;
+  decodeSecretKey: () => string;
   validatePassword: (data: string) => Promise<boolean>;
 }
 // Clase para manejar la creación de usuarios con tsoa
@@ -38,7 +49,12 @@ const UserSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
-    validate: [isEmail, "invalid email"],
+    validate: {
+      validator: function (v: string) {
+        return patt.test(v);
+      },
+      message: (props) => `${props.value} is not a valid email`,
+    },
   },
   password: { type: String, required: true },
   role: { type: String, required: true },
@@ -59,8 +75,8 @@ UserSchema.pre("save", async function save(next) {
   try {
     const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
     this.password = await bcrypt.hash(this.password, salt);
-    this.apiKey = await bcrypt.hash(this.apiKey, salt);
-    this.secretKey = await bcrypt.hash(this.secretKey, salt);
+    this.apiKey = CryptoJS.AES.encrypt(this.apiKey, AESkey).toString();
+    this.secretKey = CryptoJS.AES.encrypt(this.secretKey, AESkey).toString();
     return next();
   } catch (err: any) {
     return next(err);
@@ -73,15 +89,14 @@ UserSchema.methods.validatePassword = async function validatePassword(
   return await bcrypt.compare(data, this.password);
 };
 
-UserSchema.methods.validateApiKey = async function validateApiKey(
-  data: string
-) {
-  return await bcrypt.compare(data, this.apiKey);
+UserSchema.methods.decodeApiKey = function decodeApiKey(): string {
+  return CryptoJS.AES.decrypt(this.apiKey, AESkey).toString(CryptoJS.enc.Utf8);
 };
-UserSchema.methods.validateSecretKey = async function validateSecretKey(
-  data: string
-) {
-  return await bcrypt.compare(data, this.secretKey);
+
+UserSchema.methods.decodeSecretKey = function decodeApiKey(): string {
+  return CryptoJS.AES.decrypt(this.secretKey, AESkey).toString(
+    CryptoJS.enc.Utf8
+  );
 };
 
 // Create model

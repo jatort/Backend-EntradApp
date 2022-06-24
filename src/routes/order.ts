@@ -3,6 +3,9 @@ import { AuthRequest } from "../types/authRequest";
 import OrderController from "../controllers/orderController";
 import { auth, isClient } from "../middlewares/auth";
 import UserController from "../controllers/userController";
+import EventController from "../controllers/eventController";
+import { Event } from "../schemas/Event";
+import { User } from "../schemas/User";
 
 const orderRouter = Router();
 
@@ -16,13 +19,21 @@ orderRouter.post(
   */
 
     const controller = new OrderController();
+    const userController = new UserController();
+    const eventController = new EventController();
     try {
       const order = await controller.bookTickets(
         req.body.eventId,
         req.body.nTickets,
         req.user?.email
       );
-      const redirect = await controller.createFlowOrder(order, req.user?.email);
+      const event = await eventController.getById(req.body.eventId);
+      const prod = await userController.getUserbyId(event.user);
+      const redirect = await controller.createFlowOrder(
+        order,
+        prod,
+        req.user?.email
+      );
       res.status(200).json({ redirect });
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
@@ -30,8 +41,12 @@ orderRouter.post(
   }
 );
 
-orderRouter.get("/", auth, isClient, async (req: AuthRequest, res: Response) => {
-  /*
+orderRouter.get(
+  "/",
+  auth,
+  isClient,
+  async (req: AuthRequest, res: Response) => {
+    /*
     Endpoint para obtener el historial de compra de un usuario
   */
 
@@ -40,11 +55,12 @@ orderRouter.get("/", auth, isClient, async (req: AuthRequest, res: Response) => 
     try {
       const user = await userController.getClient(req.user!.email);
       const orders = await orderController.getOrders(user._id);
-      return res.status(200).json({orders});
+      return res.status(200).json({ orders });
     } catch (err: any) {
-      return res.status(400).json({message: err.message});
+      return res.status(400).json({ message: err.message });
     }
-});
+  }
+);
 
 orderRouter.post("/result", async (req: Request, res: Response) => {
   try {

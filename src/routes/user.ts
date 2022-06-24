@@ -26,7 +26,7 @@ userRouter.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
     const user = await controller.getUser(req.params.id);
     return res.status(200).json({ user });
   } catch (err: any) {
-    return res.status(400).json({ message: err.message });
+    return res.status(400).json({ message: err });
   }
 });
 
