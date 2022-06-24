@@ -1,4 +1,4 @@
-import { Event } from "../schemas/Event";
+import { Event, IEvent } from "../schemas/Event";
 import { IUser, User } from "../schemas/User";
 import { Ticket } from "../schemas/Ticket";
 import { IOrder, Order } from "../schemas/Order";
@@ -13,7 +13,7 @@ export default class OrderController {
     id: string,
     nTickets: number,
     userEmail: string | undefined
-  ): Promise<IOrder> {
+  ): Promise<IOrder & { _id: mongoose.Types.ObjectId }> {
     /*
       Crea una orden
     */
@@ -65,7 +65,7 @@ export default class OrderController {
   }
 
   async createFlowOrder(
-    order: IOrder,
+    order: IOrder & { _id: mongoose.Types.ObjectId },
     prod: IUser & { _id: mongoose.Types.ObjectId },
     clientEmail: string | undefined
   ): Promise<string> {
@@ -92,6 +92,10 @@ export default class OrderController {
     try {
       // Ejecuta el servicio
       let response = await flowApi.send(serviceName, params, "POST");
+      await Order.findOneAndUpdate(
+        { _id: order._id },
+        { flowToken: response.token }
+      );
       //Prepara url para redireccionar el browser del pagador
       const redirect = response.url + "?token=" + response.token;
       return redirect;
@@ -100,7 +104,7 @@ export default class OrderController {
     }
   }
 
-  async receiveFlowOrder(token: string): Promise<any> {
+  async receiveFlowOrder(token: string, prod: IUser): Promise<any> {
     /*
       Obtiene el estado de la orden en Flow
     */
@@ -108,7 +112,11 @@ export default class OrderController {
       token: token,
     };
     let serviceName = "payment/getStatus";
-    const flowApi = new FlowApi(config);
+    const flowApi = new FlowApi({
+      ...config,
+      apiKey: prod.decodeApiKey(),
+      secretKey: prod.decodeSecretKey(),
+    });
     try {
       let response = await flowApi.send(serviceName, params, "GET");
       return response;
@@ -140,6 +148,19 @@ export default class OrderController {
     } catch (err: any) {
       throw new Error(`Error: ${err.message}`);
     }
+  }
+
+  async getOrderByToken(
+    token: string
+  ): Promise<IOrder & { _id: mongoose.Types.ObjectId }> {
+    /*
+      Obtiene la orden desde la BDD
+    */
+    const order = await Order.findOne({ flowToken: token });
+    if (!order) {
+      throw new Error(`Order not found`);
+    }
+    return order;
   }
 
   async createTickets(

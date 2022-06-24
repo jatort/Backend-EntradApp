@@ -63,11 +63,16 @@ orderRouter.get(
 );
 
 orderRouter.post("/result", async (req: Request, res: Response) => {
+  const controller = new OrderController();
+  const eventController = new EventController();
+  const userController = new UserController();
   try {
-    const controller = new OrderController();
+    const order = await controller.getOrderByToken(req.body.token);
+    const event = await eventController.getById(order.event.toString());
+    const prod = await userController.getUserbyId(event.user);
     // Se obtiene el estado de la orden de Flow.
-    const response = await controller.receiveFlowOrder(req.body.token);
-    const order = await controller.getOrder(response.commerceOrder);
+    const response = await controller.receiveFlowOrder(req.body.token, prod);
+    // const order = await controller.getOrder(response.commerceOrder);
     const message = await controller.createTickets(order, response.status);
     res.write(
       `<h1 style="font-size: 48px; text-align: center; justify-content: center;">${message}</h1>`
@@ -80,10 +85,15 @@ orderRouter.post("/result", async (req: Request, res: Response) => {
 orderRouter.post("/paymentConfirm", async (req: Request, res: Response) => {
   try {
     const controller = new OrderController();
+    const eventController = new EventController();
+    const userController = new UserController();
+    const order = await controller.getOrderByToken(req.body.token);
+    const event = await eventController.getById(order.event.toString());
+    const prod = await userController.getUserbyId(event.user);
     // Se obtiene el estado de la orden de Flow.
-    const response = await controller.receiveFlowOrder(req.body.token);
+    const response = await controller.receiveFlowOrder(req.body.token, prod);
     // Se obtiene la orden a partir del estado de la orden de Flow
-    const order = await controller.getOrder(response.commerceOrder);
+    // const order = await controller.getOrder(response.commerceOrder);
     // Se generan los tickets correspondientes a la compra.
     const message = await controller.createTickets(order, response.status);
     res.write(

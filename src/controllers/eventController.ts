@@ -28,7 +28,7 @@ export default class EventController {
     Retorna el evento de id: 'id'
     */
     const event = await Event.findById(id);
-    if (event == null) {
+    if (!event) {
       throw new Error("No event found");
     }
     return event;
