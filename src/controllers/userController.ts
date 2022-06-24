@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import { UserResponse } from "../types/userResponse";
 import { DeleteResponse } from "../types/deleteResponse";
 import { Ticket } from "../schemas/Ticket";
-import FlowController from "./flowController";
 
 export default class UserController {
   UserResponse = (
@@ -20,7 +19,6 @@ export default class UserController {
     Crea un usuario a partir de los parámetros recibidos en el json data. Se filtran los errores posibles diferenciando 
     sus mensajes de error y en caso de exito se retorna el modelo usuario.
     */
-    const controller = new FlowController();
     try {
       if (
         body.role === "prod" &&
