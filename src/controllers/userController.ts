@@ -20,7 +20,18 @@ export default class UserController {
     sus mensajes de error y en caso de exito se retorna el modelo usuario.
     */
     try {
+      if (
+        body.role === "prod" &&
+        (body.apiKey === "" || body.secretKey === "")
+      ) {
+        // tirar error si no se ingresaron las claves de acceso de flow
+        throw new Error("Missing Flow keys");
+      }
       const user = new User(body);
+      /* if (user.role === "prod") {
+        // crear comercio con controlador
+        await controller.createMerchant(user);
+      } */
       await user.save();
       return user;
     } catch (err: any) {
@@ -75,7 +86,7 @@ export default class UserController {
     }
   }
 
-  async getProd(email: any): Promise<IUser | Error> {
+  async getProd(email: any): Promise<IUser & { _id: mongoose.Types.ObjectId }> {
     /*
     Retorna el usuario productor de email: 'email'
     */
@@ -87,11 +98,27 @@ export default class UserController {
     }
   }
 
-  async getClient(email: any): Promise<(IUser & {_id: mongoose.Types.ObjectId;})> {
+  async getClient(
+    email: any
+  ): Promise<IUser & { _id: mongoose.Types.ObjectId }> {
     /*
     Retorna el usuario cliente de email: 'email'
     */
     const user = await User.findOne({ email: email });
+    if (!user) {
+      throw new Error("User not found");
+    } else {
+      return user;
+    }
+  }
+
+  async getUserbyId(
+    _id: mongoose.Types.ObjectId
+  ): Promise<IUser & { _id: mongoose.Types.ObjectId }> {
+    /*
+    Retorna el usuario de id: 'id'
+    */
+    const user = await User.findById(_id);
     if (!user) {
       throw new Error("User not found");
     } else {

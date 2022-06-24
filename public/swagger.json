@@ -222,6 +222,12 @@
           },
           "role": {
             "type": "string"
+          },
+          "apiKey": {
+            "type": "string"
+          },
+          "secretKey": {
+            "type": "string"
           }
         },
         "required": ["username", "email", "password", "role"],
@@ -351,6 +357,7 @@
     "/user": {
       "post": {
         "operationId": "CreateUser",
+        "description": "Registra un nuevo usuario en la base de datos.\n Nota: Solamente se pueden registrar correos hotmail, gmail y yahoo.",
         "responses": {
           "200": {
             "description": "Ok",
@@ -661,7 +668,11 @@
           }
         },
         "tags": ["order"],
-        "security": [],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": []
       }
     },
