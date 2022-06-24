@@ -16,6 +16,7 @@ on:
 
 env:
   TOKEN: ${{ secrets.TOKEN }}
+  AES_KEY: ${{ secrets.AES_KEY }}
 
 jobs:
   build:
